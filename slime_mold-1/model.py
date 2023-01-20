@@ -3,6 +3,7 @@ from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 import numpy as np
+import math
 from scipy.spatial.distance import pdist
 from sklearn.neighbors import DistanceMetric
 
@@ -52,7 +53,7 @@ class ChemAgent(Agent):
         #so, now, only 1/2 of the total val leaks out. we can tweak this.
         #but seems to work better to multiply by some scalar < 1.
 
-        amt_per_neighbor = 0.5*(self.chem/n_neighbors)
+        amt_per_neighbor = 0.0*(self.chem/n_neighbors) #TODO 0.5
 
         for neighbor in self.model.grid.get_neighbors(self.pos,
                                                       moore=True,
@@ -63,7 +64,7 @@ class ChemAgent(Agent):
 
     def evaporate(self):
         '''All chem agents lose chemical at 0.005 per step'''
-        evap_rate = 0.01
+        evap_rate = 0.0 #TODO 0.01
         if self.chem > evap_rate: # so that self.chem stays pos
             self.chem -= evap_rate
         else:
@@ -86,12 +87,14 @@ class SlimeAgent(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.chem = 0
+        self.food = False
 
     def secrete(self):
         '''The agent adds chemical to its surrounding cells'''
         for neighbor in self.model.grid.neighbor_iter(self.pos):
             if isinstance(neighbor, ChemAgent):
-                neighbor.chem += 0.02  # add 0.1 chemical to neighboring cells
+                if (self.food == True):
+                    neighbor.chem += 0.02  # add 0.1 chemical to neighboring cells
 
     def move(self):
         '''The agent sniffs the surrounding cells for the highest concentration
@@ -114,12 +117,47 @@ class SlimeAgent(Agent):
         optimal = neighbors[idx]  # assign obj w/ said index
 
         new_position = optimal.pos  # identify the position of the optimal obj
+        print(new_position)
+        global basecoord
+        if (new_position == basecoord):
+            self.food = True
+            print('food found!')
         self.model.grid.move_agent(self, new_position)
+
+    def duplicate(self):
+        '''The agent sniffs the surrounding cells for the highest concentration
+        of chemical - it them moves to that cell.'''
+        neighbors = self.model.grid.get_neighbors(
+            self.pos,
+            moore=True,
+            include_center=True,
+            radius=1
+        )
+
+        curIndex = 0
+        idx = 0
+        temp = 0
+        while(curIndex < len(neighbors)):
+            if(temp < neighbors[curIndex].chem):
+                temp = neighbors[curIndex].chem  # save the objattr
+                idx = curIndex  # save the idx
+            curIndex += 1  # increment idx
+        optimal = neighbors[idx]  # assign obj w/ said index
+
+        #TODO create new agent
+        print('newslime')
+        global newslime
+        newslime += 1
+        slime = SlimeAgent(newslime, self)
+        slime.schedule.add(slime)
+        slime.grid.place_agent(slime, optimal.pos)
+        print('newslime done')
 
 
     def step(self):
         if (self.unique_id%10 != 0):
             self.move()
+            # self.duplicate()
             self.secrete()
         else: #either quell secretion or moving
             #self.secrete()
@@ -146,13 +184,31 @@ class SlimeModel(Model):
 
         # Spawn agents
 
+        # Food spawn
+        x = self.random.randrange(self.grid.width)
+        y = self.random.randrange(self.grid.height)
+        global basecoord
+        global newslime
+        newslime = self.N
+        basecoord = [x, y]
+        base = ChemAgent('basefood', self)
+        self.schedule.add(base)
+        self.grid.place_agent(base, (x, y)) # spawn
+        base.chem = 1
+
         # Add chem agent to every grid cell
         for coord in self.grid.coord_iter():
             coord_content, x, y = coord # pull contents, x/y pos from coord obj
             id = str(x)+'_'+str(y) # unique_id is x_y position
             a = ChemAgent(id, self) # instantiate a chem agent
+            areacoord = [x, y]
+            if math.dist(basecoord, areacoord) != 0:
+                a.chem = 1/math.dist(basecoord, areacoord)*base.chem*0.95
+                if (a.chem < 0.25):
+                    a.chem = 0
             self.schedule.add(a) # add to the schedule
             self.grid.place_agent(a, (x, y)) # spawn the chem agent
+            
 
         # Add slime agent randomly, population specified by N
         for i in range(self.N):

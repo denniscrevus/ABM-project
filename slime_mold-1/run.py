@@ -58,5 +58,5 @@ server = ModularServer(SlimeModel, # the model to feed in
                        "Slime Model", # title
                        {"pop":slime_population, "width":width, "height":height}) # arguments for the model
 
-server.port = 8251 # the default port
+server.port = 8250 # the default port
 server.launch()
