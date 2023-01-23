@@ -1,4 +1,5 @@
 from agents import SlimeAgent, ChemAgent
+import math
 from mesa import Model
 from mesa.time import BaseScheduler
 from mesa.space import MultiGrid
@@ -53,6 +54,30 @@ class SlimeModel(Model):
         self.schedule.add(slime)
         
         self.grid.place_agent(slime, self.origin)
+
+        # Food spawn
+        x = self.random.randrange(self.grid.width)
+        y = self.random.randrange(self.grid.height)
+        x = 55
+        y = 55
+        global basecoord
+        global newslime
+        basecoord = [x, y]
+        base = ChemAgent(self.next_id(), self)
+        # self.schedule.add(base)
+        self.grid.place_agent(base, (x, y)) # spawn
+        base.chem = 1
+
+        for coord in self.grid.coord_iter():
+            coord_content, x, y = coord # pull contents, x/y pos from coord obj
+            a = ChemAgent(self.next_id(), self) # instantiate a chem agent
+            areacoord = [x, y]
+            if math.dist(basecoord, areacoord) != 0:
+                a.chem = 1/math.dist(basecoord, areacoord)*base.chem*0.95
+                if (a.chem < 0.25):
+                    a.chem = 0
+            # self.schedule.add(a) # add to the schedule
+            self.grid.place_agent(a, (x, y)) # spawn the chem agent
 
         # Initialize datacollector
         self.datacollector = DataCollector(model_reporters={"Average_Distance": compute_distance_matrix})
