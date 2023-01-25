@@ -1,62 +1,47 @@
-from mesa.visualization.modules import ChartModule
-from mesa.visualization.modules import CanvasGrid
-from mesa.visualization.ModularVisualization import ModularServer
-from model import * # our model module
-import argparse
+from matplotlib import animation, cm, colors
+import matplotlib.pyplot as plt
+import numpy as np
+from agents import *
+from model import *
+from tokyo_mapping import *
 
-# We need to provide that takes an agent, returns a portrayal object
-'''Universal Parameters'''
-width = 20 # width of grid
-height = 20 # height of grid
-slime_population = 20 # how many slime cells to add
-arena_size = 750 # grid cell width in pixels
+size = 100
+model = SlimeModel(size, size)
 
-def agent_portrayal(agent):
-    if isinstance(agent, ChemAgent):
-        if agent.chem > 0 and agent.chem < 2:
-            portrayal = {"Shape": "circle",
-                         "Color": "blue",
-                         "Filled": "true",
-                         "Layer": 0,
-                         "r": agent.chem}
-        elif agent.chem >= 2: # max the radius at 2 so we don't overload the image
-            portrayal = {"Shape": "circle",
-                         "Color": "blue",
-                         "Filled": "true",
-                         "Layer": 0,
-                         "r": 2}
-        else:
-            portrayal = {"Shape": "rect",
-                         "Color": "white",
-                         "Filled": "true",
-                         "Layer": 0,
-                         "w": 1,
-                         "h": 1}
-    if isinstance(agent, SlimeAgent):
-        portrayal = {"Shape": "circle",
-                     "Color": "red",
-                     "Filled": "true",
-                     "Layer": 1,
-                     "r": 0.33}
-    return portrayal
 
-# Instantiate canvas grid with width and height in cells/pixels
-grid = CanvasGrid(agent_portrayal, width, height, arena_size, arena_size)
+cmap = cm.get_cmap('Greens')
+norm = colors.Normalize(vmin = np.min(model.chem_values), vmax=np.max(model.chem_values))
+image_colors = []
+fig, ax = plt.subplots()
 
-# Create a chart for the total amount of chemical
-chart1 = ChartModule([{"Label": "Total_Chem",
-                      "Color": "Black"}],
-                      data_collector_name='datacollector')
+# print(image_colors)
+for x in range(size):
+    image_colors.append([])
+    for y in range(size):
+        image_colors[x].append(cmap(norm(model.chem_values[x,y])))
 
-chart2 = ChartModule([{"Label": "Average_Distance",
-                      "Color": "Red"}],
-                      data_collector_name='datacollector')
+images = [[ax.imshow(image_colors)]]
 
-# Create and launch the server
-server = ModularServer(SlimeModel, # the model to feed in
-                       [grid, chart1, chart2], # the list of objects to include in the viz
-                       "Slime Model", # title
-                       {"pop":slime_population, "width":width, "height":height}) # arguments for the model
+for i in range(200):
+    # print(i)
+    model.step()
+    for location in model.added_slime_locations:
+        # print(location)
+        x, y = location
+        image_colors[x][y] = (255/255, 242/255, 0, 1) # yellow: (255/255, 242/255, 0, 1), darker yellow: (213/255, 184/255, 90/255, 1)
+    images.append([ax.imshow(image_colors)])
 
-server.port = 8250 # the default port
-server.launch()
+ani = animation.ArtistAnimation(fig, images, interval=1, blit=True,
+                                repeat_delay=1000)
+
+writer = animation.PillowWriter(fps=30,
+                                metadata=dict(artist='Me'),
+                                bitrate=1800)
+ani.save('slime.gif', writer=writer)
+# ani.save('slime.mp4')        
+# print(vars(model.datacollector))
+# data = model.datacollector.get_model_vars_dataframe()
+
+
+plt.show()
+# print(vars(model.datacollector))
