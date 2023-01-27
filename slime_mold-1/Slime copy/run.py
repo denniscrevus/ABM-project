@@ -1,4 +1,4 @@
-from matplotlib import animation, cm, colors
+from matplotlib import animation, cm, colors, rc
 import matplotlib.pyplot as plt
 import numpy as np
 from agents import *
@@ -6,61 +6,49 @@ from model import *
 from tokyo_mapping import *
 
 size = 100
-N = 5
-model = SlimeModel(size, size, N)
+N_agents = 5
+N_steps = 50
+model = SlimeModel(size, size, N_agents)
 
 
 cmap = cm.get_cmap('Greens')
 norm = colors.Normalize(vmin = np.min(model.chem_values), vmax=np.max(model.chem_values))
-image_colors = []
+image_colors = np.zeros((size, size))
 fig, ax = plt.subplots()
 
-# print(image_colors)
-# for x in range(size):
-#     image_colors.append([])
-#     for y in range(size):
-#         image_colors[x].append(cmap(norm(model.chem_values[x,y])))
 
-# images = [[ax.imshow(image_colors)]]
+image_colors = cmap(norm(model.chem_values))
+images = [image_colors]
 
-for i in range(50):
-    # print(i)
+for i in range(N_steps):
     model.step()
-    # print(model.added_slime_locations)
-    # for location in model.added_slime_locations:
-    #     print(location)
-    #     x, y = location
-    #     image_colors[x][y] = (255/255, 242/255, 0, 1) # yellow: (255/255, 242/255, 0, 1), darker yellow: (213/255, 184/255, 90/255, 1)
-    # images.append([ax.imshow(image_colors)])
-for x in range(size):
-    image_colors.append([])
-    for y in range(size):
-        image_colors[x].append(cmap(norm(model.chem_values[x,y])))
 
-for x, y in model.slime_locations:
-    image_colors[x][y] = (255/255, 242/255, 0, 1) # RGBA for yellow
+    image_colors = cmap(norm(model.chem_values))
 
-for x, y in model.food_locations:
-    image_colors[x][y] = (0, 100/255, 0, 1) # RGBA for dark green
+    for location in model.added_slime_locations:
+        x, y = location
+        image_colors[x][y] = (255/255, 242/255, 0, 1) # yellow: (255/255, 242/255, 0, 1), darker yellow: (213/255, 184/255, 90/255, 1)
 
-for x, y in model.hub_locations:
-    image_colors[x][y] = (0, 0, 1, 1) # RGBA for blue
+    for x, y in model.slime_locations:
+        image_colors[x][y] = (255/255, 242/255, 0, 1) # RGBA for yellow
+
+    for x, y in model.food_locations:
+        image_colors[x][y] = (0, 100/255, 0, 1) # RGBA for dark green
+
+    for x, y in model.hub_locations:
+        image_colors[x][y] = (0, 0, 1, 1) # RGBA for blue
+
+    images.append(np.copy(image_colors))
 
 
+im_plot = plt.imshow(image_colors)
+
+def anim_step(frame):
+    im_plot.set_data(frame)
+
+    return im_plot,
 
 
+anim = animation.FuncAnimation(fig, anim_step, images, blit=True)
 
-# ani = animation.ArtistAnimation(fig, images, interval=1, blit=True,
-#                                 repeat_delay=1000)
-
-# writer = animation.PillowWriter(fps=30,
-#                                 metadata=dict(artist='Me'),
-#                                 bitrate=1800)
-# ani.save('slime.gif', writer=writer)
-# ani.save('slime.mp4')        
-# print(vars(model.datacollector))
-# data = model.datacollector.get_model_vars_dataframe()
-
-plt.imshow(image_colors)
-plt.show()
-# print(vars(model.datacollector))
+anim.save("anim.html", writer=animation.HTMLWriter())
