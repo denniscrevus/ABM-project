@@ -53,7 +53,7 @@ class SlimeAgent(Agent):
 
         self.model.added_slime_locations.append(coordinate)
         self.model.grid.place_agent(new_slime, coordinate)
-        self.model.slime_cells.append(new_slime)
+        # self.model.slime_cells.append(new_slime)
         self.model.schedule.add(new_slime)
     
     def step(self):
@@ -89,12 +89,14 @@ class SlimeAgent(Agent):
             for _, new_position in new_positions:
                 self.multiply(new_position)
                 cost = get_distance(self.pos, new_position)
+                # print(cost)
                 self.model.connections[new_position] = ({(self.pos, cost)})
                 self.model.connections[self.pos].add((new_position, cost))
 
         if len(occupied_cells) > 0 and np.random.uniform() < self.model.p_connect:
             connection = random.sample(occupied_cells, 1)[0]
             cost = get_distance(self.pos, connection)
+            # print(cost)
             self.model.connections[self.pos].add((connection, cost))
             self.model.connections[connection].add((self.pos, cost))
 

@@ -17,7 +17,7 @@ model = SlimeModel(size, size, p_branch, p_connect, signal_strength, noise)
 # cmap = cm.get_cmap('Greens')
 # norm = colors.Normalize(vmin = np.min(model.chem_values), vmax=np.max(model.chem_values))
 # image_colors = []
-fig = plt.figure(dpi=200, figsize=(5, 5))
+fig = plt.figure(dpi=200, figsize=(3, 3))
 # # print(image_colors)
 # for x in range(size):
 #     image_colors.append([])
@@ -43,15 +43,11 @@ convert_result_to_graph(model.connections, [model.food_locations[n] for n in mod
 
 graph = reduce_graph(model.connections, model.food_locations.values())
 # print(len(graph))
-D = get_distance_matrix(model.food_locations)
-# print(D)
+# D = get_distance_matrix(model.food_locations)
+# raise NotImplementedError
+
 for node, links in graph.items():
     x0, y0 = node
-    if len(links) == 2 or len(links) == 1:
-        pass
-        # print('test', len(links))
-        # print(links)
-        # print()
     for connected_coordinate, cost in links:
         x, y = connected_coordinate
         plt.plot([x0, x], [y0, y], color=(255/255, 242/255, 0, 1), lw=.5, zorder=-1)
