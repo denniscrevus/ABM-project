@@ -48,14 +48,14 @@ class SlimeAgent(Agent):
         x0, y0 = self.pos
         x, y = coordinate
         direction = (x-x0, y-y0)
-    
+
         new_slime = SlimeAgent(self.model.next_id(), self.model, direction, self.pos)
 
         self.model.added_slime_locations.append(coordinate)
         self.model.grid.place_agent(new_slime, coordinate)
         # self.model.slime_cells.append(new_slime)
         self.model.schedule.add(new_slime)
-    
+
     def step(self):
 
         neighborhood = self.model.grid.get_neighborhood(self.pos, moore=True)
@@ -68,14 +68,14 @@ class SlimeAgent(Agent):
         n = len(empty_cells)
         noise = np.random.normal(0, self.model.noise, size=n)
         order = []
-        
+
         for i, coordinate in enumerate(empty_cells):
             x, y = coordinate
             chem_value = self.model.chem_values[x,y] + noise[i]
             order.append((chem_value, (x, y)))
 
         order.sort(reverse=True)
-        
+
         n_branches = 1
 
         # Allow four initial branches at first reproduction step
@@ -86,6 +86,7 @@ class SlimeAgent(Agent):
 
         if n != 0:
             new_positions = [order[i] for i in range(n_branches)]
+
             for _, new_position in new_positions:
                 self.multiply(new_position)
                 cost = get_distance(self.pos, new_position)
