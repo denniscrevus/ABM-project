@@ -1,4 +1,4 @@
-from agents import ChemAgent, FoodAgent, SlimeAgent
+from agents import FoodAgent, SlimeAgent
 import math
 from mesa import Model
 from mesa.time import BaseScheduler
@@ -20,6 +20,10 @@ class Grid(MultiGrid):
     def get_cell_content(self, coordinate):
         x, y = coordinate
         return self.grid[x][y]
+    
+    def contains_slime(self, coordinate):
+        x, y = coordinate
+        return any(isinstance(agent, SlimeAgent) for agent in self.grid[x][y])
 
 
 class SlimeModel(Model):
@@ -30,67 +34,66 @@ class SlimeModel(Model):
     width -- grid width (int)
     height -- grid height (int)
     '''
-    def __init__(self, width, height):
+    def __init__(self, width, height, p_branch, p_connect,signal_strength, noise):
         '''Initialize the model'''
 
         super().__init__()
+        # Initialise model parameters
+        self.width = width
+        self.height = height
+        self.p_branch = p_branch
+        self.p_connect = p_connect
+        self.signal_strength = signal_strength
+        self.noise = noise
+
+        # Initialise grid and starting agents
         self.grid = Grid(width, height, torus=False)
         self.schedule = BaseScheduler(self)
         self.running = True
         self.origin = (width // 2, height // 2)
-        self.slime_locations = []
-        slime = SlimeAgent(self.next_id(), self)
+        slime = SlimeAgent(self.next_id(), self, (0, 0), self.origin, origin=True)
         self.schedule.add(slime)
         
         self.grid.place_agent(slime, self.origin)
         self.added_slime_locations = [self.origin]
+        self.slime_cells = [slime]
+        self.connections = {self.origin: set()}
+
         self.food_sources = []
+        self.food_locations = {}
         self.chem_values = np.zeros((width, height))
 
         # Place food sources on city locations
         food_coords = text_to_coords('tokyo_coords.txt')
-        for x, y in food_coords:
-            food = FoodAgent(self.next_id(), self, (x, y))
-            self.grid.place_agent(food, (x, y))
+        # food_coords = text_to_coords('testgrid.txt')
+        for i, coordinate in enumerate(food_coords):
+            food = FoodAgent(self.next_id(), self, coordinate)
+            self.grid.place_agent(food, coordinate)
             self.food_sources.append(food)
+            self.food_locations[i] = coordinate
+            food.update_chem()
+        
+        self.paths = []
+       
 
-        for cell in self.grid.coord_iter():
-            _, x, y = cell
-            chem_value = 0
-            for food_source in self.food_sources:
-                x_y_dist = np.abs(np.subtract((x, y), food_source.pos))
-                dist = np.sqrt(np.sum(x_y_dist**2))
-                chem_value += 1 / ((dist + 1)**2)
-
-            self.chem_values[x,y] = chem_value
-            
-            chemical = ChemAgent(self.next_id(), self, chem_value, (x, y))
-            # if math.dist(basecoord, areacoord) != 0:
-            #     a.chem = 1/math.dist(basecoord, areacoord)*base.chem*0.95
-            #     if (a.chem < 0.25):
-            #         a.chem = 0
-            self.grid.place_agent(chemical, (x, y))
-
-        # Initialize datacollector
-        model_reporters = {'chem': 'chem_values'}
-        # agent_reporters = {'active': ''}
-        self.datacollector = DataCollector(model_reporters=model_reporters, agent_reporters={})
-
-
-    def get_slimeless_neighborhood(self, neighborhood):
-        slimeless_cells = []
+    def divide_neighborhood(self, neighborhood, agent_type):
+        empty_cells = []
+        occupied_cells = []
         for cell in neighborhood:
             agents = self.grid.get_cell_content(cell)
-            if not any(isinstance(agent, SlimeAgent) for agent in agents):
-                slimeless_cells.append(cell)
-        return slimeless_cells
+            if not any(isinstance(agent, agent_type) for agent in agents):
+                empty_cells.append(cell)
+            else:
+                occupied_cells.append(cell)
+        return empty_cells, occupied_cells
 
 
     def step(self):
         '''Advances the model by one step'''
-        self.datacollector.collect(self)
         self.added_slime_locations = []
         self.schedule.step()
+
+    
 
 
         

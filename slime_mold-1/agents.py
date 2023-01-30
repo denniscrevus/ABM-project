@@ -1,3 +1,5 @@
+import copy
+from helpers import get_distance
 from mesa import Agent
 import numpy as np
 import random
@@ -6,17 +8,13 @@ class FoodAgent(Agent):
     def __init__(self, unique_id, model, position):
         super().__init__(unique_id, model)
         self.pos = position
+        self.found_by = None
 
-
-class ChemAgent(Agent):
-    '''
-    An agent representing chemical concentration. This will be spawned in
-    every gridspace and hold a float value representing chemical concentration.
-    '''
-    def __init__(self, unique_id, model, chem_value, position):
-        super().__init__(unique_id, model)
-        self.chem = chem_value
-        self.pos = position
+    def update_chem(self):
+        for _, x, y in self.model.grid.coord_iter():
+            x_y_dist = np.abs(np.subtract((x, y), self.pos))
+            dist = np.sqrt(np.sum(x_y_dist**2))
+            self.model.chem_values[x,y] += self.model.signal_strength / ((dist + 1)**2)
 
 
 class SlimeAgent(Agent):
@@ -24,75 +22,82 @@ class SlimeAgent(Agent):
     An agent that excretes chemical, senses, and moves towards higher chemical
     concentration. This agent represents a single slime mold cell.
     '''
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, direction, prev_pos, origin=False):
         super().__init__(unique_id, model)
         self.active = True
         self.chem = 0
+        self.direction = direction
+        self.node = False
+        self.previous_pos = prev_pos
+        self.origin = origin
 
-    def multiply(self):
+    def neighborhood_from_direction(self):
+        neighborhood = []
+        for x, y in self.model.directions[self.direction]:
+            x0, y0 = self.pos
+            coordinate = (x0 + x, y0 + y)
+            if not self.model.grid.out_of_bounds(coordinate):
+                neighborhood.append(coordinate)
+        return neighborhood
+
+    def multiply(self, coordinate):
         '''
         The agent checks the surrounding cells for the highest concentration
         of chemical and multiplies towards there.
         '''
+        x0, y0 = self.pos
+        x, y = coordinate
+        direction = (x-x0, y-y0)
+    
+        new_slime = SlimeAgent(self.model.next_id(), self.model, direction, self.pos)
+
+        self.model.added_slime_locations.append(coordinate)
+        self.model.grid.place_agent(new_slime, coordinate)
+        self.model.slime_cells.append(new_slime)
+        self.model.schedule.add(new_slime)
+    
+    def step(self):
 
         neighborhood = self.model.grid.get_neighborhood(self.pos, moore=True)
-        possible_positions = self.model.get_slimeless_neighborhood(neighborhood)
+        if not self.origin:
+            neighborhood.remove(self.previous_pos)
 
-        # If no free spaces around slime, stop
-        n_free_cells = len(possible_positions)
-        if len(possible_positions) == 0:
-            return
+        # Divide neighborhood in two sets of coordinates that do and do not contain slime cells
+        empty_cells, occupied_cells = self.model.divide_neighborhood(neighborhood, SlimeAgent)
 
-        index_array = np.arange(n_free_cells, dtype=int)
-        p_array = np.zeros(n_free_cells)
-        chem_values = np.zeros(n_free_cells)
-        for i, coordinate in enumerate(possible_positions):
-            x, y = coordinate
-            chem_values[i] = self.model.chem_values[x,y]
+        n = len(empty_cells)
+        noise = np.random.normal(0, self.model.noise, size=n)
+        order = []
         
-        p_array = chem_values**2 / sum(chem_values**2)
+        for i, coordinate in enumerate(empty_cells):
+            x, y = coordinate
+            chem_value = self.model.chem_values[x,y] + noise[i]
+            order.append((chem_value, (x, y)))
 
+        order.sort(reverse=True)
+        
         n_branches = 1
+
+        # Allow four initial branches at first reproduction step
         if self.model.schedule.steps == 0:
             n_branches = 4
-        elif np.random.uniform() < 0.075 and n_free_cells > 1:
+        elif np.random.uniform() < self.model.p_branch and n > 1:
             n_branches = 2
 
-        # distances = self.dist_to_origin(possible_positions) ** 2
-        # p = distances / np.sum(distances)
-        # possible_indices = np.arange(n_free_cells, dtype=int)
-        cell_indices = np.random.choice(index_array, size=n_branches, p=p_array)    
-        new_positions = [possible_positions[index] for index in cell_indices]
-        # valid_positions = list(filter(lambda position: not any(isinstance(self.model.grid.grid[position[0]][position[1]], SlimeAgent)), new_positions))
-        self.model.added_slime_locations.extend(new_positions)
-        for new_position in new_positions:
-            # x, y = new_position
-            content = self.model.grid.get_cell_content(new_position)
-            if any([isinstance(FoodAgent, type(agent)) for agent in content]):
-                new_slime = SlimeAgent(self.model.next_id(), self.model)
+        if n != 0:
+            new_positions = [order[i] for i in range(n_branches)]
+            for _, new_position in new_positions:
+                self.multiply(new_position)
+                cost = get_distance(self.pos, new_position)
+                self.model.connections[new_position] = ({(self.pos, cost)})
+                self.model.connections[self.pos].add((new_position, cost))
 
-                self.model.grid.place_agent(new_slime, new_position)
-                return
+        if len(occupied_cells) > 0 and np.random.uniform() < self.model.p_connect:
+            connection = random.sample(occupied_cells, 1)[0]
+            cost = get_distance(self.pos, connection)
+            self.model.connections[self.pos].add((connection, cost))
+            self.model.connections[connection].add((self.pos, cost))
 
-
-            new_slime = SlimeAgent(self.model.next_id(), self.model)
-
-            self.model.grid.place_agent(new_slime, new_position)
-            self.model.schedule.add(new_slime)
-            
-    
-    
-    def dist_to_origin(self, neighborhood):
-        x0, y0 = self.model.origin
-        distances = np.zeros(len(neighborhood))
-        for i, cell in enumerate(neighborhood):
-            x, y = cell
-            distances[i] = abs(x - x0) + abs(y - y0)
-        return distances
+        self.model.schedule.remove(self)
 
 
-    def step(self):
-        if self.active:
-            self.multiply()
-            self.active = False
-            self.model.schedule.remove(self)
