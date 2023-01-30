@@ -5,6 +5,7 @@ from agents import *
 from helpers import reduce_graph, get_distance_matrix
 from model import *
 from tokyo_mapping import *
+from analyze_graph import *
 
 size = 100
 p_branch = 0.075
@@ -38,6 +39,8 @@ for i in range(200):
 # slime_x = []
 # slime_y = []
 
+convert_result_to_graph(model.connections, [model.food_locations[n] for n in model.food_locations])
+
 graph = reduce_graph(model.connections, model.food_locations.values())
 # print(len(graph))
 D = get_distance_matrix(model.food_locations)
@@ -45,10 +48,10 @@ D = get_distance_matrix(model.food_locations)
 for node, links in graph.items():
     x0, y0 = node
     if len(links) == 2 or len(links) == 1:
-        
-        print('test', len(links))
-        print(links)
-        print()
+        pass
+        # print('test', len(links))
+        # print(links)
+        # print()
     for connected_coordinate, cost in links:
         x, y = connected_coordinate
         plt.plot([x0, x], [y0, y], color=(255/255, 242/255, 0, 1), lw=.5, zorder=-1)
@@ -72,7 +75,7 @@ plt.scatter(x, y, color='red', marker='s', s=3)
 #                                 metadata=dict(artist='Me'),
 #                                 bitrate=1800)
 # ani.save('slime.gif', writer=writer)
-# ani.save('slime.mp4')        
+# ani.save('slime.mp4')
 # print(vars(model.datacollector))
 # data = model.datacollector.get_model_vars_dataframe()
 
