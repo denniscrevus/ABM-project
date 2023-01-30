@@ -17,40 +17,35 @@ def text_to_coords(file_name):
 
 def reduce_graph(graph, food_locations): 
     reduced = False
-
     # Keep reducing until no more changes have been made
     while not reduced:
         changed = False
         remove_list = []
-        for node_0, links in graph.items():
-            # print()
-            # print(links)
-            print(node_0)
+        for (node_0, links) in graph.items():
             n = len(links)
-            # print(n)
+
             # Remove dead ends if they are not food locations
             if n == 1 and node_0 not in food_locations:
-                # print(links)
                 (node_1, cost), = links 
                 graph[node_1].remove((node_0, cost))
                 remove_list.append(node_0)
                 changed = True
 
-            # Remove node if it has two links and connect those two links 
+            # Remove node if it has two links and connect those two links unless those nodes form a triangular path
             elif n == 2 and node_0 not in food_locations:
-                # print(node_0)
                 ((node_1, cost_1), (node_2, cost_2)) = links
-                cost = cost_1 + cost_2
-                # print('node0:', node_0)
-                # print('node1', node_1)
-                # print('node2:', node_2)
-                graph[node_1].add((node_2, cost))
+                cost = round(cost_1 + cost_2, 3)
+                if not triangular_path(node_0, graph):
+                    graph[node_1].add((node_2, cost))
+                    graph[node_2].add((node_1, cost))
+
+
                 graph[node_1].remove((node_0, cost_1))
-                graph[node_2].add((node_1, cost))
                 graph[node_2].remove((node_0, cost_2))
                 remove_list.append(node_0)
                 changed = True
-        # print(changed)
+        
+        # Remove unnecessary nodes when finished looping over dictionary
         for node in remove_list:
             del graph[node]
         if not changed:
@@ -58,10 +53,19 @@ def reduce_graph(graph, food_locations):
 
     return graph
 
+def triangular_path(node, graph):
+    (node_1, _), (node_2, _) = graph[node]
+    coordinates_1, _ = zip(*graph[node_1])
+    coordinates_2, _ = zip(*graph[node_2])
+    if node_2 in coordinates_1 and node_1 in coordinates_2:
+        return True
+    return False
+    
+
 def get_distance(start, end):
     x0, y0 = start
     x, y = end
-    return np.sqrt((x-x0)**2 + (y-y0)**2)
+    return round(np.sqrt((x-x0)**2 + (y-y0)**2), 3)
 
 # def shortest_walk(graph, food_locations):
 #     paths = {}

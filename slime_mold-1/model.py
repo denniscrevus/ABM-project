@@ -56,10 +56,10 @@ class SlimeModel(Model):
         
         self.grid.place_agent(slime, self.origin)
         self.added_slime_locations = [self.origin]
-        self.slime_cells = [slime]
+        # self.slime_cells = [slime]
         self.connections = {self.origin: set()}
 
-        self.food_sources = []
+        # self.food_sources = []
         self.food_locations = {}
         self.chem_values = np.zeros((width, height))
 
@@ -69,7 +69,7 @@ class SlimeModel(Model):
         for i, coordinate in enumerate(food_coords):
             food = FoodAgent(self.next_id(), self, coordinate)
             self.grid.place_agent(food, coordinate)
-            self.food_sources.append(food)
+            # self.food_sources.append(food)
             self.food_locations[i] = coordinate
             food.update_chem()
         
