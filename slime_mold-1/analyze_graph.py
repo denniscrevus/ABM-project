@@ -1,8 +1,16 @@
 import networkx as nx
-import numpy as np
 
 
-def convert_result_to_graph(connections, main_nodes):
+def convert_result_to_graph(connections):
+    """Converts the result of the slime model into a networkx graph
+    for easier analysis.
+
+    Args:
+        connections: dictionary result from the model
+
+    Returns:
+        networkx.Graph: the network containing all nodes and edges
+    """
     graph = nx.Graph()
 
     graph.add_nodes_from(connections.keys())
@@ -13,10 +21,17 @@ def convert_result_to_graph(connections, main_nodes):
         for (next_node, cost) in edges:
             graph.add_edge(node, next_node, weight=cost)
 
-    get_all_shortest_paths(graph, main_nodes)
+    return graph
 
 
 def get_all_shortest_paths(graph, target_nodes):
+    """Finds all shortest paths between the specified nodes
+
+    Returns:
+        dict[frozenset(list)]: dictionary containing all discovered shortest paths (use frozenset with the start and end node as key)
+    """
+    shortest_paths = {}
+
     for i in range(len(target_nodes)):
         for j in range(i, len(target_nodes)):
             if i != j:
@@ -24,10 +39,11 @@ def get_all_shortest_paths(graph, target_nodes):
                 node_b = target_nodes[j]
 
                 try:
-                    print(node_a, node_b, len(nx.algorithms.astar_path(graph, node_a, node_b)))
+                    shortest_paths[frozenset([node_a, node_b])] = nx.algorithms.astar_path(graph, node_a, node_b)
                 except nx.exception.NetworkXNoPath:
-                    # print(node_b, "not reachable from", node_a)
-                    pass
+                    shortest_paths[frozenset([node_a, node_b])] = None
+
+    return shortest_paths
 
 
 if __name__ == "__main__":
