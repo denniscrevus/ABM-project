@@ -32,11 +32,14 @@ class SlimeAgent(Agent):
 
     def neighborhood_from_direction(self):
         neighborhood = []
+
         for x, y in self.model.directions[self.direction]:
             x0, y0 = self.pos
             coordinate = (x0 + x, y0 + y)
+
             if not self.model.grid.out_of_bounds(coordinate):
                 neighborhood.append(coordinate)
+
         return neighborhood
 
     def multiply(self, coordinate):
@@ -55,7 +58,6 @@ class SlimeAgent(Agent):
         self.model.schedule.add(new_slime)
 
     def step(self):
-
         neighborhood = self.model.grid.get_neighborhood(self.pos, moore=True)
         if not self.origin:
             neighborhood.remove(self.previous_pos)

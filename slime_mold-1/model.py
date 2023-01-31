@@ -76,12 +76,15 @@ class SlimeModel(Model):
     def divide_neighborhood(self, neighborhood, agent_type):
         empty_cells = []
         occupied_cells = []
+
         for cell in neighborhood:
             agents = self.grid.get_cell_content(cell)
+
             if not any(isinstance(agent, agent_type) for agent in agents):
                 empty_cells.append(cell)
             else:
                 occupied_cells.append(cell)
+
         return empty_cells, occupied_cells
 
     def step(self):
