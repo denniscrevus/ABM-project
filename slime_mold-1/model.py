@@ -5,9 +5,6 @@ from mesa.time import BaseScheduler
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 import numpy as np
-import random
-from scipy.spatial.distance import pdist
-from helpers import text_to_coords
 
 # from sklearn.neighbors import DistanceMetric
 
@@ -20,7 +17,7 @@ class Grid(MultiGrid):
     def get_cell_content(self, coordinate):
         x, y = coordinate
         return self.grid[x][y]
-    
+
     def contains_slime(self, coordinate):
         x, y = coordinate
         return any(isinstance(agent, SlimeAgent) for agent in self.grid[x][y])
@@ -34,7 +31,8 @@ class SlimeModel(Model):
     width -- grid width (int)
     height -- grid height (int)
     '''
-    def __init__(self, width, height, p_branch, p_connect,signal_strength, noise):
+    def __init__(self, width, height, p_branch, p_connect,signal_strength,
+                    noise, food_coords):
         '''Initialize the model'''
 
         super().__init__()
@@ -53,28 +51,27 @@ class SlimeModel(Model):
         self.origin = (width // 2, height // 2)
         slime = SlimeAgent(self.next_id(), self, (0, 0), self.origin, origin=True)
         self.schedule.add(slime)
-        
+
         self.grid.place_agent(slime, self.origin)
         self.added_slime_locations = [self.origin]
-        # self.slime_cells = [slime]
         self.connections = {self.origin: set()}
 
-        # self.food_sources = []
         self.food_locations = {}
         self.chem_values = np.zeros((width, height))
 
-        # Place food sources on city locations
-        food_coords = text_to_coords('tokyo_coords.txt')
-        # food_coords = text_to_coords('testgrid.txt')
         for i, coordinate in enumerate(food_coords):
             food = FoodAgent(self.next_id(), self, coordinate)
             self.grid.place_agent(food, coordinate)
-            # self.food_sources.append(food)
             self.food_locations[i] = coordinate
             food.update_chem()
-        
+
         self.paths = []
-       
+
+    def run(self, N_steps):
+        for _ in range(N_steps):
+            self.step()
+
+        return self.connections
 
     def divide_neighborhood(self, neighborhood, agent_type):
         empty_cells = []
@@ -87,13 +84,11 @@ class SlimeModel(Model):
                 occupied_cells.append(cell)
         return empty_cells, occupied_cells
 
-
     def step(self):
         '''Advances the model by one step'''
         self.added_slime_locations = []
         self.schedule.step()
 
-    
 
 
-        
+

@@ -24,12 +24,14 @@ def convert_result_to_graph(connections):
     return graph
 
 
-def get_all_shortest_paths(graph, target_nodes):
+def get_all_shortest_paths(connections, target_nodes):
     """Finds all shortest paths between the specified nodes
 
     Returns:
         dict[frozenset(list)]: dictionary containing all discovered shortest paths (use frozenset with the start and end node as key)
     """
+    graph = convert_result_to_graph(connections)
+
     shortest_paths = {}
 
     for i in range(len(target_nodes)):
