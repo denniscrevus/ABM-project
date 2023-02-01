@@ -64,6 +64,8 @@ def plot_result(graph, shortest_paths=None, show_all=True):
     x, y = zip(*model.food_locations.values())
     plt.scatter(x, y, color='red', marker='s', s=3, zorder=100)
 
+    plt.savefig("graph.png")
+
     plt.show()
 
 
