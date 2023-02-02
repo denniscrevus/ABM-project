@@ -79,11 +79,40 @@ def plot_data(x_vals, data):
         plt.plot(x_vals, mean_data[i])
         plt.fill_between(x_vals, mean_data[i] - std_data[i], mean_data[i] + std_data[i], alpha=0.5)
 
-        plt.title("Slime ABM simulation (10 runs)")
+        plt.title("Slime ABM simulation (single run)")
         plt.xlabel("branch probability")
         plt.ylabel(output_vars[i])
 
         plt.savefig(output_vars[i] + ".png")
+
+
+def plot_node_distribution():
+    N_steps = 200
+    size = 100
+    p_branch = 0.075
+    p_connect = 0.1
+    signal_strength = 1
+    noise = 0.05 * signal_strength
+    food_coords = text_to_coords("tokyo_coords.txt")
+
+    degrees = []
+    for _ in range(50):
+        model = SlimeModel(size, size, p_branch, p_connect, signal_strength, noise,
+                                food_coords)
+
+        connections = model.run(N_steps)
+        reduced_graph = reduce_graph(connections, food_coords)
+        nx_graph = convert_result_to_graph(reduced_graph)
+
+        degrees += [d for (_, d) in nx_graph.degree(food_coords)]
+
+    fig = plt.figure()
+
+    plt.hist(degrees)
+
+    plt.title("Degree distribution of food nodes")
+
+    plt.show()
 
 
 def run_experiment(N_runs=1, save_file=None):
@@ -93,7 +122,7 @@ def run_experiment(N_runs=1, save_file=None):
     """
     N_steps = 200
     size = 100
-    p_branch_vals = np.linspace(0.0, 1.0, 50)
+    p_branch_vals = np.linspace(0.0, 1.0, 5)
     p_connect = 0.1
     signal_strength = 1
     noise = 0.05 * signal_strength
@@ -156,11 +185,12 @@ def run_experiment(N_runs=1, save_file=None):
 
 
 if __name__ == "__main__":
-    N_runs = 5
+    N_runs = 1
 
     if len(sys.argv) > 1:
         command = sys.argv[1]
 
+        # Plot the data from the specified file
         if command == 'plot':
             filename = None
 
@@ -171,6 +201,7 @@ if __name__ == "__main__":
                 plot_data(x_vals, results)
             else:
                 print("please provide file to load and plot")
+        # Run the data with the current parameters and save it in the specified file
         elif command == 'run':
             save_file = None
 
@@ -181,3 +212,5 @@ if __name__ == "__main__":
 
             if not save_file:
                 plot_data(x_vals, results)
+        elif command == 'node_hist':
+            plot_node_distribution()
