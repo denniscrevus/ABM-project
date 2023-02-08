@@ -43,13 +43,14 @@ def plot_all_vars(df, param, problem):
         param: the parameter to be plotted
     """
 
-    f, axs = plt.subplots(3, figsize=(7, 10))
-    
-    for i, var in enumerate(problem['names']):
-        plot_param_var_conf(axs[i], data[var], var, param, i)
+    f, axs = plt.subplots(4, figsize=(7, 10))
+    f.set_tight_layout(True)
 
-def do_plots(param, data, problem):
-    for param in ('graph_len'):
+    for i, var in enumerate(problem['names']):
+        plot_param_var_conf(axs[i], df[var], var, param, i)
+
+def do_plots(params, data, problem):
+    for param in params:
         plot_all_vars(data, param, problem)
         plt.show()
 
@@ -86,7 +87,9 @@ def OFAT():
         batch.run_all()
         
         data[var] = batch.get_model_vars_dataframe()
-        print(data)
+    
+    do_plots(["Graph size"], data, problem)
+    plt.show()
 
 def plot_index(s, params, i, title=''):
     """
@@ -176,4 +179,4 @@ def sobol_total():
     plt.show()
 
 if __name__ == "__main__":
-    sobol_total()
+    OFAT()
