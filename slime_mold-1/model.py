@@ -1,5 +1,6 @@
 from agents import FoodAgent, SlimeAgent
 import math
+from helpers import text_to_coords
 from mesa import Model
 from mesa.time import BaseScheduler
 from mesa.space import MultiGrid
@@ -31,8 +32,8 @@ class SlimeModel(Model):
     width -- grid width (int)
     height -- grid height (int)
     '''
-    def __init__(self, width, height, p_branch, p_connect,signal_strength,
-                    noise, food_coords):
+    def __init__(self, width=100, height=100, p_branch=0.075, p_connect=0.1, signal_strength=1,
+                    noise=0.05, food_coords=text_to_coords("tokyo_coords.txt")):
         '''Initialize the model'''
 
         super().__init__()
@@ -66,6 +67,9 @@ class SlimeModel(Model):
             food.update_chem()
 
         self.paths = []
+
+    def get_connections(self):
+        return self.connections
 
     def run(self, N_steps):
         for _ in range(N_steps):
