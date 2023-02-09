@@ -63,9 +63,9 @@ def OFAT():
     }
 
     # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-    replicates = 1
+    replicates = 5
     max_steps = 200
-    distinct_samples = 1
+    distinct_samples = 5
 
     # Set the outputs
     food_coords = text_to_coords("tokyo_coords.txt")
@@ -90,6 +90,7 @@ def OFAT():
     
     do_plots(["Graph size"], data, problem)
     plt.show()
+    plt.savefig("OFAT.png")
 
 def plot_index(s, params, i, title=''):
     """
@@ -124,7 +125,7 @@ def plot_index(s, params, i, title=''):
     plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o')
     plt.axvline(0, c='k')
 
-def sobol_total():
+def sobol_first_total():
     # We define our variables and bounds
     problem = {
         'num_vars': 4,
@@ -133,9 +134,9 @@ def sobol_total():
     }
 
     # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-    replicates = 1
+    replicates = 5
     max_steps = 200
-    distinct_samples = 1
+    distinct_samples = 5
 
     # We get all our samples here
     param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
@@ -145,7 +146,7 @@ def sobol_total():
     model_reporters = {"Graph size": lambda m: convert_result_to_graph(reduce_graph(m.get_connections(), food_coords)).size(weight="weight")}
 
     # READ NOTE BELOW CODE
-    batch = BatchRunner(SlimeModel, 
+    batch = BatchRunner(SlimeModel,
                         max_steps=max_steps,
                         variable_parameters={name:[] for name in problem['names']},
                         model_reporters=model_reporters)
@@ -172,11 +173,13 @@ def sobol_total():
             clear_output()
             print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done')
 
-    # Total order
+    # Total order and first order
     Si_graph_size = sobol.analyze(problem, data['Graph size'].values, print_to_console=True, calc_second_order=False)
     plot_index(Si_graph_size, problem['names'], 'T', 'Total order sensitivity')
     plot_index(Si_graph_size, problem['names'], '1', 'First order sensitivity')
     plt.show()
+    plt.savefig("Sobol.png")
 
 if __name__ == "__main__":
     OFAT()
+    sobol_first_total()
