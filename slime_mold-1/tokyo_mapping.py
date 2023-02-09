@@ -100,7 +100,7 @@ def coord_to_grid_coord(coord, hor_n, ver_n):
     if y_index >= ver_n:
         y_index = ver_n - 1
 
-    return [x_index, y_index]
+    return [int(x_index), int(y_index)]
 
 
 def coords_to_grid_indices(coords, hor_n, ver_n):
