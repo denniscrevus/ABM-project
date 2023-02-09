@@ -70,7 +70,7 @@ def plot_result(graph, shortest_paths=None, show_all=True):
 
 
 if __name__ == "__main__":
-    N_steps = 200
+    N_steps = 200 #200
     size = 100
     p_branch = 0.075
     p_connect = 0.1
