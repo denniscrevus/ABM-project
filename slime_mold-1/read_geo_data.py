@@ -107,7 +107,7 @@ def read_edges(filename):
         for line in reader:
             node_A = int(line[0])
             node_B = int(line[1])
-            match = re.search("{'d': ([0-9]*)", line[2])
+            match = re.search("'d': ([0-9]*)", line[2])
 
             edges[(node_A, node_B)] = int(match.group(1))
 
@@ -122,13 +122,13 @@ def create_graph(node_coords, edges):
         node_B = edge[1]
         d = edges[edge]
 
-        G.add_edge(node_A, node_B, weight=d, pos=(node_coords[node_A], node_coords[node_B]))
+        G.add_edge(node_A, node_B, weight=d)
 
     return G
 
 
 if __name__ == "__main__":
-    city = "rome"
+    city = "berlin"
     node_coords = read_nodes(f"data/{city}/network_nodes.csv")
     edges = read_edges(f"data/{city}/network_rail.csv")
     graph = create_graph(node_coords, edges)

@@ -1,0 +1,120 @@
+from_stop_I;to_stop_I;attr_dict
+5121;4947;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 60.0, 'd': 1092}
+5122;5088;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 2111}
+5435;5729;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 180.0, 'd': 3954}
+4097;2896;{'n_vehicles': 7, 'route_I_counts': {323: 1, 324: 6}, 'duration_avg': 488.57142857142856, 'd': 8816}
+4097;6355;{'n_vehicles': 7, 'route_I_counts': {323: 1, 324: 6}, 'duration_avg': 411.42857142857144, 'd': 8311}
+4097;4004;{'n_vehicles': 73, 'route_I_counts': {320: 7, 322: 33, 319: 33}, 'duration_avg': 240.0, 'd': 3594}
+4097;4111;{'n_vehicles': 72, 'route_I_counts': {320: 9, 322: 32, 319: 31}, 'duration_avg': 120.0, 'd': 1435}
+3082;3052;{'n_vehicles': 72, 'route_I_counts': {320: 9, 322: 32, 319: 31}, 'duration_avg': 120.0, 'd': 1656}
+3082;4620;{'n_vehicles': 73, 'route_I_counts': {320: 7, 322: 33, 319: 33}, 'duration_avg': 147.94520547945206, 'd': 1249}
+6359;6360;{'n_vehicles': 7, 'route_I_counts': {323: 1, 324: 6}, 'duration_avg': 411.42857142857144, 'd': 7040}
+6359;6362;{'n_vehicles': 41, 'route_I_counts': {320: 9, 322: 32}, 'duration_avg': 120.0, 'd': 1879}
+4620;3224;{'n_vehicles': 73, 'route_I_counts': {320: 7, 322: 33, 319: 33}, 'duration_avg': 120.0, 'd': 1728}
+4620;3082;{'n_vehicles': 72, 'route_I_counts': {320: 9, 322: 32, 319: 31}, 'duration_avg': 120.0, 'd': 1249}
+4110;4097;{'n_vehicles': 73, 'route_I_counts': {320: 7, 322: 33, 319: 33}, 'duration_avg': 120.0, 'd': 1436}
+5485;5452;{'n_vehicles': 98, 'route_I_counts': {313: 78, 314: 19, 316: 1}, 'duration_avg': 120.0, 'd': 1211}
+3224;4620;{'n_vehicles': 72, 'route_I_counts': {320: 9, 322: 32, 319: 31}, 'duration_avg': 123.33333333333333, 'd': 1728}
+3224;4110;{'n_vehicles': 73, 'route_I_counts': {320: 7, 322: 33, 319: 33}, 'duration_avg': 120.0, 'd': 1146}
+6361;6360;{'n_vehicles': 41, 'route_I_counts': {320: 9, 322: 32}, 'duration_avg': 187.3170731707317, 'd': 2745}
+6361;6362;{'n_vehicles': 40, 'route_I_counts': {320: 7, 322: 33}, 'duration_avg': 181.5, 'd': 3067}
+7064;6965;{'n_vehicles': 98, 'route_I_counts': {313: 78, 314: 19, 316: 1}, 'duration_avg': 239.3877551020408, 'd': 2739}
+7065;5916;{'n_vehicles': 100, 'route_I_counts': {313: 77, 314: 21, 316: 2}, 'duration_avg': 180.0, 'd': 3481}
+5916;7064;{'n_vehicles': 98, 'route_I_counts': {313: 78, 314: 19, 316: 1}, 'duration_avg': 180.6122448979592, 'd': 3482}
+5916;5798;{'n_vehicles': 100, 'route_I_counts': {313: 77, 314: 21, 316: 2}, 'duration_avg': 120.0, 'd': 2108}
+800;594;{'n_vehicles': 120, 'route_I_counts': {321: 97, 314: 21, 316: 2}, 'duration_avg': 180.0, 'd': 2482}
+800;934;{'n_vehicles': 118, 'route_I_counts': {312: 98, 314: 19, 316: 1}, 'duration_avg': 120.0, 'd': 1480}
+2337;2338;{'n_vehicles': 72, 'route_I_counts': {320: 7, 318: 65}, 'duration_avg': 60.0, 'd': 863}
+5410;5087;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 300.0, 'd': 6134}
+2339;1018;{'n_vehicles': 75, 'route_I_counts': {320: 9, 318: 66}, 'duration_avg': 120.0, 'd': 1048}
+2340;2339;{'n_vehicles': 75, 'route_I_counts': {320: 9, 318: 66}, 'duration_avg': 120.0, 'd': 865}
+4005;4097;{'n_vehicles': 72, 'route_I_counts': {320: 9, 322: 32, 319: 31}, 'duration_avg': 239.16666666666666, 'd': 3594}
+5798;5836;{'n_vehicles': 100, 'route_I_counts': {313: 77, 314: 21, 316: 2}, 'duration_avg': 117.0, 'd': 1072}
+5798;5916;{'n_vehicles': 98, 'route_I_counts': {313: 78, 314: 19, 316: 1}, 'duration_avg': 121.83673469387755, 'd': 2108}
+5489;594;{'n_vehicles': 55, 'route_I_counts': {315: 36, 317: 19}, 'duration_avg': 542.1818181818181, 'd': 12075}
+554;1017;{'n_vehicles': 169, 'route_I_counts': {320: 7, 321: 97, 318: 65}, 'duration_avg': 177.5147928994083, 'd': 1953}
+555;593;{'n_vehicles': 173, 'route_I_counts': {312: 98, 320: 9, 318: 66}, 'duration_avg': 120.0, 'd': 1148}
+1580;1650;{'n_vehicles': 118, 'route_I_counts': {312: 98, 314: 19, 316: 1}, 'duration_avg': 120.0, 'd': 1377}
+1580;934;{'n_vehicles': 120, 'route_I_counts': {321: 97, 314: 21, 316: 2}, 'duration_avg': 128.0, 'd': 2082}
+1650;1785;{'n_vehicles': 118, 'route_I_counts': {312: 98, 314: 19, 316: 1}, 'duration_avg': 121.01694915254237, 'd': 1753}
+1650;1898;{'n_vehicles': 78, 'route_I_counts': {313: 78}, 'duration_avg': 180.0, 'd': 2949}
+1650;1580;{'n_vehicles': 120, 'route_I_counts': {321: 97, 314: 21, 316: 2}, 'duration_avg': 120.0, 'd': 1377}
+1650;934;{'n_vehicles': 77, 'route_I_counts': {313: 77}, 'duration_avg': 240.0, 'd': 3460}
+1328;1384;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 1381}
+1328;1105;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 1098}
+76;593;{'n_vehicles': 242, 'route_I_counts': {320: 7, 321: 97, 322: 33, 323: 1, 324: 6, 318: 65, 319: 33}, 'duration_avg': 243.47107438016528, 'd': 2955}
+4851;4850;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 60.0, 'd': 969}
+6966;7065;{'n_vehicles': 100, 'route_I_counts': {313: 77, 314: 21, 316: 2}, 'duration_avg': 180.0, 'd': 2738}
+6966;594;{'n_vehicles': 3, 'route_I_counts': {311: 3}, 'duration_avg': 980.0, 'd': 24780}
+6966;5489;{'n_vehicles': 55, 'route_I_counts': {315: 36, 317: 19}, 'duration_avg': 482.1818181818182, 'd': 12923}
+3003;2894;{'n_vehicles': 7, 'route_I_counts': {320: 7}, 'duration_avg': 120.0, 'd': 1636}
+3003;2895;{'n_vehicles': 65, 'route_I_counts': {318: 65}, 'duration_avg': 180.0, 'd': 1649}
+5436;5410;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 1520}
+2896;1018;{'n_vehicles': 70, 'route_I_counts': {322: 32, 323: 1, 324: 6, 319: 31}, 'duration_avg': 240.85714285714286, 'd': 4436}
+5411;5435;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 1516}
+5729;5452;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 180.0, 'd': 2223}
+4111;3224;{'n_vehicles': 72, 'route_I_counts': {320: 9, 322: 32, 319: 31}, 'duration_avg': 120.0, 'd': 1147}
+5452;5488;{'n_vehicles': 197, 'route_I_counts': {313: 77, 314: 21, 316: 2, 321: 97}, 'duration_avg': 120.60913705583756, 'd': 1209}
+5452;5730;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 180.0, 'd': 2218}
+5452;5836;{'n_vehicles': 98, 'route_I_counts': {313: 78, 314: 19, 316: 1}, 'duration_avg': 180.6122448979592, 'd': 2346}
+75;592;{'n_vehicles': 60, 'route_I_counts': {315: 39, 316: 1, 317: 17, 311: 3}, 'duration_avg': 305.0, 'd': 3129}
+5836;5452;{'n_vehicles': 100, 'route_I_counts': {313: 77, 314: 21, 316: 2}, 'duration_avg': 180.0, 'd': 2346}
+5836;5798;{'n_vehicles': 98, 'route_I_counts': {313: 78, 314: 19, 316: 1}, 'duration_avg': 120.0, 'd': 1072}
+77;592;{'n_vehicles': 195, 'route_I_counts': {312: 98, 313: 78, 314: 19}, 'duration_avg': 269.84615384615387, 'd': 2945}
+592;800;{'n_vehicles': 118, 'route_I_counts': {312: 98, 314: 19, 316: 1}, 'duration_avg': 131.1864406779661, 'd': 2482}
+592;6965;{'n_vehicles': 3, 'route_I_counts': {311: 3}, 'duration_avg': 960.0, 'd': 24781}
+592;934;{'n_vehicles': 78, 'route_I_counts': {313: 78}, 'duration_avg': 240.0, 'd': 3814}
+592;5486;{'n_vehicles': 56, 'route_I_counts': {315: 39, 317: 17}, 'duration_avg': 540.0, 'd': 12076}
+1105;1328;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 1098}
+1105;1018;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 1437}
+594;80;{'n_vehicles': 195, 'route_I_counts': {313: 77, 314: 21, 321: 97}, 'duration_avg': 300.0, 'd': 2942}
+594;78;{'n_vehicles': 60, 'route_I_counts': {315: 36, 316: 2, 317: 19, 311: 3}, 'duration_avg': 305.0, 'd': 3126}
+4947;4946;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 915}
+4947;5122;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 1094}
+2894;3052;{'n_vehicles': 7, 'route_I_counts': {320: 7}, 'duration_avg': 120.0, 'd': 1663}
+1017;2337;{'n_vehicles': 72, 'route_I_counts': {320: 7, 318: 65}, 'duration_avg': 120.0, 'd': 1049}
+1017;2893;{'n_vehicles': 73, 'route_I_counts': {322: 33, 323: 1, 324: 6, 319: 33}, 'duration_avg': 267.94520547945206, 'd': 4436}
+1017;1105;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 1436}
+6360;4097;{'n_vehicles': 7, 'route_I_counts': {323: 1, 324: 6}, 'duration_avg': 420.0, 'd': 8311}
+6360;4005;{'n_vehicles': 41, 'route_I_counts': {320: 9, 322: 32}, 'duration_avg': 241.46341463414635, 'd': 4796}
+4004;6355;{'n_vehicles': 40, 'route_I_counts': {320: 7, 322: 33}, 'duration_avg': 289.5, 'd': 4797}
+6362;6361;{'n_vehicles': 41, 'route_I_counts': {320: 9, 322: 32}, 'duration_avg': 133.17073170731706, 'd': 3067}
+6362;6354;{'n_vehicles': 40, 'route_I_counts': {320: 7, 322: 33}, 'duration_avg': 171.0, 'd': 1878}
+2895;3004;{'n_vehicles': 75, 'route_I_counts': {320: 9, 318: 66}, 'duration_avg': 120.0, 'd': 1652}
+5087;5121;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 2111}
+5088;5411;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 300.0, 'd': 6132}
+5730;5436;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 180.0, 'd': 3954}
+2338;3003;{'n_vehicles': 72, 'route_I_counts': {320: 7, 318: 65}, 'duration_avg': 120.0, 'd': 1014}
+934;800;{'n_vehicles': 120, 'route_I_counts': {321: 97, 314: 21, 316: 2}, 'duration_avg': 120.0, 'd': 1480}
+934;1650;{'n_vehicles': 78, 'route_I_counts': {313: 78}, 'duration_avg': 180.0, 'd': 3460}
+934;1580;{'n_vehicles': 118, 'route_I_counts': {312: 98, 314: 19, 316: 1}, 'duration_avg': 121.01694915254237, 'd': 2082}
+934;594;{'n_vehicles': 77, 'route_I_counts': {313: 77}, 'duration_avg': 240.0, 'd': 3815}
+2893;4097;{'n_vehicles': 7, 'route_I_counts': {323: 1, 324: 6}, 'duration_avg': 428.57142857142856, 'd': 8817}
+2893;3052;{'n_vehicles': 66, 'route_I_counts': {322: 33, 319: 33}, 'duration_avg': 120.0, 'd': 1664}
+593;1017;{'n_vehicles': 73, 'route_I_counts': {322: 33, 323: 1, 324: 6, 319: 33}, 'duration_avg': 207.94520547945206, 'd': 3067}
+593;554;{'n_vehicles': 169, 'route_I_counts': {320: 7, 321: 97, 318: 65}, 'duration_avg': 85.56213017751479, 'd': 1149}
+593;79;{'n_vehicles': 243, 'route_I_counts': {320: 9, 322: 32, 323: 1, 324: 6, 312: 98, 318: 66, 319: 31}, 'duration_avg': 300.0, 'd': 2951}
+1384;1328;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 1381}
+1384;4851;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 1448}
+3004;2340;{'n_vehicles': 75, 'route_I_counts': {320: 9, 318: 66}, 'duration_avg': 120.0, 'd': 1009}
+1898;1785;{'n_vehicles': 120, 'route_I_counts': {321: 97, 314: 21, 316: 2}, 'duration_avg': 120.0, 'd': 1246}
+1898;1650;{'n_vehicles': 77, 'route_I_counts': {313: 77}, 'duration_avg': 240.0, 'd': 2949}
+1898;5485;{'n_vehicles': 98, 'route_I_counts': {313: 78, 314: 19, 316: 1}, 'duration_avg': 180.6122448979592, 'd': 2037}
+1898;5487;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 180.0, 'd': 2035}
+3052;2896;{'n_vehicles': 63, 'route_I_counts': {322: 32, 319: 31}, 'duration_avg': 150.47619047619048, 'd': 1663}
+3052;3082;{'n_vehicles': 73, 'route_I_counts': {320: 7, 322: 33, 319: 33}, 'duration_avg': 120.0, 'd': 1656}
+3052;2895;{'n_vehicles': 9, 'route_I_counts': {320: 9}, 'duration_avg': 120.0, 'd': 1649}
+4946;4850;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 60.0, 'd': 817}
+4946;4947;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 60.0, 'd': 915}
+5486;6965;{'n_vehicles': 56, 'route_I_counts': {315: 39, 317: 17}, 'duration_avg': 484.2857142857143, 'd': 12924}
+5487;5452;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 60.0, 'd': 1212}
+5488;1898;{'n_vehicles': 197, 'route_I_counts': {313: 77, 314: 21, 316: 2, 321: 97}, 'duration_avg': 120.0, 'd': 2039}
+4849;1384;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 1449}
+4850;4849;{'n_vehicles': 98, 'route_I_counts': {312: 98}, 'duration_avg': 120.0, 'd': 968}
+4850;4946;{'n_vehicles': 97, 'route_I_counts': {321: 97}, 'duration_avg': 120.0, 'd': 817}
+6355;6361;{'n_vehicles': 40, 'route_I_counts': {320: 7, 322: 33}, 'duration_avg': 132.0, 'd': 2745}
+6355;6354;{'n_vehicles': 7, 'route_I_counts': {323: 1, 324: 6}, 'duration_avg': 377.14285714285717, 'd': 7039}
+1785;1898;{'n_vehicles': 118, 'route_I_counts': {312: 98, 314: 19, 316: 1}, 'duration_avg': 120.0, 'd': 1246}
+1785;1650;{'n_vehicles': 120, 'route_I_counts': {321: 97, 314: 21, 316: 2}, 'duration_avg': 120.0, 'd': 1753}
+1018;593;{'n_vehicles': 70, 'route_I_counts': {322: 32, 323: 1, 324: 6, 319: 31}, 'duration_avg': 240.85714285714286, 'd': 3066}
+1018;555;{'n_vehicles': 173, 'route_I_counts': {312: 98, 320: 9, 318: 66}, 'duration_avg': 153.98843930635837, 'd': 1953}
