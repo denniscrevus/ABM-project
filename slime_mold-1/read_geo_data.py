@@ -3,9 +3,22 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import utm
+import re
+
+from analyze_graph import get_average_shortest_path_length, get_average_node_degree, get_average_betweenness
 
 
 def coord_to_grid_coord(coord, hor_n, ver_n):
+    """Takes a values between 0 and 1 and maps it to a grid coordinate
+
+    Args:
+        coord (_type_): tuple(x, y)
+        hor_n (_type_): amount of columns
+        ver_n (_type_): amount of rows
+
+    Returns:
+        tuple(): new coordinate containing index of the corresponding cell
+    """
     x, y = coord
 
     x_index = np.ceil(hor_n * x)
@@ -17,10 +30,12 @@ def coord_to_grid_coord(coord, hor_n, ver_n):
     if y_index >= ver_n:
         y_index = ver_n - 1
 
-    return [int(x_index), int(y_index)]
+    return (int(x_index), int(y_index))
 
 
 def coords_to_grid_indices(coords, hor_n, ver_n):
+    """Applies the function coord_to_grid_coord to a dictionary
+    """
     grid_indices = {}
 
     for node_id in coords:
@@ -32,6 +47,9 @@ def coords_to_grid_indices(coords, hor_n, ver_n):
 
 
 def convert_geo_to_relative_coords(geo_coords):
+    """Takes a dictionary of node ids to geo-coordinates and maps them to numbers
+    between 0 and 1.
+    """
     station_locations = {}
 
     # Convert coordinates to 2D space coordinates
@@ -79,7 +97,7 @@ def read_nodes(filename):
 
 
 def read_edges(filename):
-    edges = []
+    edges = {}
 
     with open(filename, "r") as fp:
         reader = csv.reader(fp, delimiter=';')
@@ -89,8 +107,9 @@ def read_edges(filename):
         for line in reader:
             node_A = int(line[0])
             node_B = int(line[1])
+            match = re.search("{'d': ([0-9]*)", line[2])
 
-            edges.append((node_A, node_B))
+            edges[(node_A, node_B)] = int(match.group(1))
 
     return edges
 
@@ -101,8 +120,9 @@ def create_graph(node_coords, edges):
     for edge in edges:
         node_A = edge[0]
         node_B = edge[1]
+        d = edges[edge]
 
-        G.add_edge(node_A, node_B, pos=(node_coords[node_A], node_coords[node_B]))
+        G.add_edge(node_A, node_B, weight=d, pos=(node_coords[node_A], node_coords[node_B]))
 
     return G
 
@@ -135,6 +155,8 @@ if __name__ == "__main__":
 
     plt.show()
 
-
     # Print some stats of the graph
-    print(nx.average_shortest_path_length(graph))
+    print(graph)
+    print("average shortest path length", get_average_shortest_path_length(graph))
+    print("average degree", get_average_node_degree(graph))
+    print("average betweenness", get_average_betweenness(graph))

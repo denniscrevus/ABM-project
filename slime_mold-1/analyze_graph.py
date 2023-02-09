@@ -60,6 +60,51 @@ def get_all_shortest_paths(connections, target_nodes):
     return shortest_paths
 
 
+def get_average_shortest_path_length(graph, use_weights=True):
+    all_lengths = []
+
+    for C in [graph.subgraph(c).copy() for c in nx.connected_components(graph)]:
+        all_lengths.append(nx.average_shortest_path_length(C, weight='weight' if use_weights else None))
+
+    return np.mean(all_lengths)
+
+
+def get_average_node_degree(graph, target_nodes=None):
+    return np.mean([d for (_, d) in graph.degree(target_nodes)])
+
+
+def get_average_betweenness(graph):
+    return np.mean(list(nx.betweenness_centrality(graph).values()))
+
+
+def remove_unused_nodes(graph, active_nodes: set):
+    """Basically reduce the graph further by removing nodes that are not
+    in main_nodes and only connecting the main nodes with each other using shortest paths.
+
+    returns a Graph
+    """
+    new_graph = nx.Graph()
+
+    # Add nodes
+    for node in active_nodes:
+        new_graph.add_node(node)
+
+    # Add edges
+    node_list = list(active_nodes)
+    for i in range(len(node_list)):
+        for j in range(i, len(node_list)):
+            if i != j:
+                node_A = node_list[i]
+                node_B = node_list[j]
+
+                if node_A in graph.nodes and node_B in graph.nodes:
+                    d = nx.shortest_path_length(graph, node_A, node_B)
+
+                    new_graph.add_edge(node_A, node_B, weight=d)
+
+    return new_graph
+
+
 def load_data(filename):
     with open(filename, "rb") as fp:
         data_obj = pickle.load(fp)
@@ -71,7 +116,7 @@ def plot_data(x_vals, data):
     mean_data = np.mean(data, axis=0)
     std_data = np.std(data, axis=0)
 
-    output_vars = ['average nodes per path', 'average degree', 'average betweenness']
+    output_vars = ['average shortest path length', 'average degree', 'average betweenness']
 
     for i in range(len(output_vars)):
         fig = plt.figure(dpi=300)
@@ -115,7 +160,7 @@ def plot_node_distribution():
     plt.show()
 
 
-def run_experiment(N_runs=1, save_file=None):
+def run_experiment(N_runs=1, omit_unused=False, save_file=None):
     """Vary parameters (except agent count)
 
     plot average degree, average path length, maybe other outputs
@@ -133,9 +178,9 @@ def run_experiment(N_runs=1, save_file=None):
     print(f"Estimated time: {N_runs * len(p_branch_vals) * 10} second(s)")
 
     for run_i in range(N_runs):
-        average_nodes = np.zeros(len(p_branch_vals))
-        average_degree = np.zeros_like(average_nodes)
-        average_betweenness = np.zeros_like(average_nodes)
+        average_length = np.zeros(len(p_branch_vals))
+        average_degree = np.zeros_like(average_length)
+        average_betweenness = np.zeros_like(average_length)
 
         print("Run", run_i + 1)
 
@@ -151,24 +196,31 @@ def run_experiment(N_runs=1, save_file=None):
             connections = model.run(N_steps)
             reduced_graph = reduce_graph(connections, food_coords)
             nx_graph = convert_result_to_graph(reduced_graph)
-            shortest_paths = get_all_shortest_paths(reduced_graph, food_coords)
 
-            # Find the average amount of nodes in the shortest paths
-            for node_pair in shortest_paths:
-                path = shortest_paths[node_pair]
+            if omit_unused:
+                used_nodes = set()
+                for index_A in range(len(food_coords)):
+                    for index_B in range(i, len(food_coords)):
+                        if index_A != index_B:
+                            node_A = food_coords[index_A]
+                            node_B = food_coords[index_B]
 
-                average_nodes[i] += len(path)
+                            if node_A in nx_graph.nodes and node_B in nx_graph.nodes:
+                                used_nodes |= set(nx.shortest_path(nx_graph, node_A, node_B))
 
-            average_nodes[i] /= len(shortest_paths)
+                nx_graph = remove_unused_nodes(nx_graph, used_nodes)
+
+            # Find the average shortest path length
+            average_length[i] = get_average_shortest_path_length(nx_graph)
 
             # Find the average degree
-            average_degree[i] = np.mean([d for (_, d) in nx_graph.degree(food_coords)])
+            average_degree[i] = get_average_node_degree(nx_graph)
 
             # Find the average betweenness centrality
-            average_betweenness[i] = np.mean(list(nx.betweenness_centrality(nx_graph).values()))
+            average_betweenness[i] = get_average_betweenness(nx_graph)
 
         # Save data in numpy array
-        all_data[run_i, 0] = average_nodes
+        all_data[run_i, 0] = average_length
         all_data[run_i, 1] = average_degree
         all_data[run_i, 2] = average_betweenness
 
@@ -185,6 +237,12 @@ def run_experiment(N_runs=1, save_file=None):
 
 
 if __name__ == "__main__":
+    """Options to run:
+    python analyze_data.py run <name of file to store experiment in>
+    python analyze_data.py plot <name of file that contains experiment to plot>
+    python analyze_data.py node_hist
+        This creates a histogram with node degrees in the graph.
+    """
     N_runs = 1
 
     if len(sys.argv) > 1:
@@ -208,7 +266,7 @@ if __name__ == "__main__":
             if len(sys.argv) > 2:
                 save_file = sys.argv[2]
 
-            x_vals, results = run_experiment(N_runs, save_file=save_file)
+            x_vals, results = run_experiment(N_runs, omit_unused=False, save_file=save_file)
 
             if not save_file:
                 plot_data(x_vals, results)
