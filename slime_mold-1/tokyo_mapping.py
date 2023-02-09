@@ -88,45 +88,63 @@ STATION_GEO_COORDS = {
 }
 
 
+def coord_to_grid_coord(coord, hor_n, ver_n):
+    x, y = coord
+
+    x_index = np.ceil(hor_n * x)
+    y_index = np.ceil(ver_n * y)
+
+    if x_index >= hor_n:
+        x_index = hor_n - 1
+
+    if y_index >= ver_n:
+        y_index = ver_n - 1
+
+    return [x_index, y_index]
+
+
 def coords_to_grid_indices(coords, hor_n, ver_n):
-    grid_indices = np.zeros_like(coords, dtype=int)
+    grid_indices = {}
 
-    for i in range(len(coords)):
-        x, y = coords[i]
+    for node_id in coords:
+        x, y = coords[node_id]
 
-        x_index = np.ceil(hor_n * x)
-        y_index = np.ceil(ver_n * y)
-
-        if x_index >= hor_n:
-            x_index = hor_n - 1
-
-        if y_index >= ver_n:
-            y_index = ver_n - 1
-
-        grid_indices[i]= [x_index, y_index]
+        grid_indices[node_id] = coord_to_grid_coord((x, y), hor_n, ver_n)
 
     return grid_indices
 
 
-def get_tokyo_grid(hor_n=100, ver_n=100):
-    station_locations = np.zeros((len(STATION_GEO_COORDS), 2))
+def convert_geo_to_relative_coords(geo_coords):
+    station_locations = {}
 
     # Convert coordinates to 2D space coordinates
-    for i in range(len(STATION_GEO_COORDS)):
-        station_name = list(STATION_GEO_COORDS.keys())[i]
-        latitude, longitude = STATION_GEO_COORDS[station_name]
+    for i in range(len(geo_coords)):
+        station_id = list(geo_coords.keys())[i]
+        latitude, longitude = geo_coords[station_id]
         x, y, _, _ = utm.from_latlon(latitude, longitude)
 
-        station_locations[i] = [x, y]
+        station_locations[station_id] = (x, y)
 
     # Scale and translate 2D coordinates
-    station_locations[:,0] -= np.min(station_locations[:,0])
-    station_locations[:,1] -= np.min(station_locations[:,1])
+    x_vals = [x for (x, _) in station_locations.values()]
+    y_vals = [y for (_, y) in station_locations.values()]
 
-    station_locations[:,0] /= np.max(station_locations[:,1])
-    station_locations[:,1] /= np.max(station_locations[:,1])
+    for i in range(len(geo_coords)):
+        node_id = list(station_locations.keys())[i]
+        x, y = station_locations[node_id]
 
+        x_new = (x - np.min(x_vals)) / (np.max(x_vals) - np.min(x_vals))
+        y_new = (y - np.min(y_vals)) / (np.max(y_vals) - np.min(y_vals))
+
+        station_locations[node_id] = (x_new, y_new)
+
+    return station_locations
+
+
+def get_tokyo_grid(hor_n=100, ver_n=100):
+    station_locations = convert_geo_to_relative_coords(STATION_GEO_COORDS)
     grid_indices = coords_to_grid_indices(station_locations, hor_n, ver_n)
+
     grid = np.zeros((hor_n, ver_n), dtype=int)
     for i in range(len(grid_indices)):
         x, y = grid_indices[i]
@@ -134,6 +152,7 @@ def get_tokyo_grid(hor_n=100, ver_n=100):
         grid[x, y] = 1
 
     return grid_indices, grid
+
 
 if __name__ == "__main__":
     grid_indices, grid = get_tokyo_grid(100, 100)
