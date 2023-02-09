@@ -4,12 +4,22 @@ import numpy as np
 import random
 
 class FoodAgent(Agent):
+    """Agent type that is responsible for setting up the chemical environment in the model."""
     def __init__(self, unique_id, model, position):
+        """
+        Initialize food agents
+
+        Args:
+            unique_id: unique id of the agent (int).
+            model: SlimeModel object that the agent is part of.
+            position: tuple of (x (int), y (int)) position of the food agent in the grid.
+        """
         super().__init__(unique_id, model)
         self.pos = position
-        self.found_by = None
+        self.update_chem()
 
     def update_chem(self):
+        """Function that updates the chemical environment to create force of attraction towards itself."""
         for _, x, y in self.model.grid.coord_iter():
             x_y_dist = np.abs(np.subtract((x, y), self.pos))
             dist = np.sqrt(np.sum(x_y_dist**2))
@@ -17,88 +27,95 @@ class FoodAgent(Agent):
 
 
 class SlimeAgent(Agent):
-    '''
-    An agent that excretes chemical, senses, and moves towards higher chemical
-    concentration. This agent represents a single slime mold cell.
-    '''
-    def __init__(self, unique_id, model, direction, prev_pos, origin=False):
+    """Agent type that is responsible for formation of networks in the model."""
+    def __init__(self, unique_id, model, parent_location, origin=False):
+        """
+        Initialize slime agents.
+
+        Args:
+            unique_id: unique id of the agent (int).
+            model: SlimeModel object that the agent is part of.
+            parent_location: location from which the new agent is generated.
+            origin: tuple of (x, y) coordinates indicating from which coordinate it was generated (int, int); default is False.
+        """
         super().__init__(unique_id, model)
-        self.active = True
-        self.chem = 0
-        self.direction = direction
-        self.node = False
-        self.previous_pos = prev_pos
+        self.previous_pos = parent_location
         self.origin = origin
 
-    def neighborhood_from_direction(self):
-        neighborhood = []
-
-        for x, y in self.model.directions[self.direction]:
-            x0, y0 = self.pos
-            coordinate = (x0 + x, y0 + y)
-
-            if not self.model.grid.out_of_bounds(coordinate):
-                neighborhood.append(coordinate)
-
-        return neighborhood
-
     def multiply(self, coordinate):
-        '''
-        The agent checks the surrounding cells for the highest concentration
-        of chemical and multiplies towards there.
-        '''
-        x0, y0 = self.pos
-        x, y = coordinate
-        direction = (x-x0, y-y0)
-
-        new_slime = SlimeAgent(self.model.next_id(), self.model, direction, self.pos)
-
-        self.model.added_slime_locations.append(coordinate)
+        """
+        Generate a new slime agent at a specific location.
+        
+        Args:
+            coordinate: tuple of (x, y) coordinates where new SlimeAgent object will be placed (int, int).
+        """
+        # Create slime, update connections, and add to grid and schedule.
+        new_slime = SlimeAgent(self.model.next_id(), self.model, self.pos)
+        cost = get_distance(self.pos, coordinate)
+        self.model.connections[coordinate] = ({(self.pos, cost)})
+        self.model.connections[self.pos].add((coordinate, cost))
         self.model.grid.place_agent(new_slime, coordinate)
         self.model.schedule.add(new_slime)
+    
+    def connect(self, coordinate):
+        """
+        Connect current location to specified location.
+        
+        Args:
+            coordinate: tuple of (x, y) coordinates to connect with.
+        """
+        # Add new coordinate to set of connected coordinates and vice versa.
+        cost = get_distance(self.pos, coordinate)
+        self.model.connections[self.pos].add((coordinate, cost))
+        self.model.connections[coordinate].add((self.pos, cost))
 
     def step(self):
+        """
+        Function that advances a slime agent one step. 
+        This step consists of multiplying and connecting to neighbouring slime agents.
+        """
+        # Get neighborhood and remove coordinate current slime Agent was generated from to prevent later "self-connecting".
         neighborhood = self.model.grid.get_neighborhood(self.pos, moore=True)
         if not self.origin:
             neighborhood.remove(self.previous_pos)
 
         # Divide neighborhood in two sets of coordinates that do and do not contain slime cells
         empty_cells, occupied_cells = self.model.divide_neighborhood(neighborhood, SlimeAgent)
-
         n = len(empty_cells)
-        noise = np.random.normal(0, self.model.noise, size=n)
-        order = []
 
-        for i, coordinate in enumerate(empty_cells):
-            x, y = coordinate
-            chem_value = self.model.chem_values[x,y] + noise[i]
-            order.append((chem_value, (x, y)))
-
-        order.sort(reverse=True)
-
-        n_branches = 1
-
-        # Allow four initial branches at first reproduction step
-        if self.model.schedule.steps == 0:
-            n_branches = 4
-        elif np.random.uniform() < self.model.p_branch and n > 1:
-            n_branches = 2
-
+        # Go through multiplying steps if there are slime-free grid cells in the neighborhood
         if n != 0:
+
+            # Determine if branching off takes place
+            if self.origin:
+                n_branches = 4
+            elif np.random.uniform() < self.model.p_branch and n > 1:
+                n_branches = 2
+            else:
+                n_branches = 1
+
+            # Apply noise to attraction by neighbouring empty grid cells
+            noise = np.random.normal(0, self.model.noise, size=n)
+            order = []
+
+            for i, coordinate in enumerate(empty_cells):
+                x, y = coordinate
+                chem_value = self.model.chem_values[x,y] + noise[i]
+                order.append((chem_value, coordinate))
+
+            order.sort(reverse=True)
             new_positions = [order[i] for i in range(n_branches)]
 
+            # Multiply and keep track of connections
             for _, new_position in new_positions:
                 self.multiply(new_position)
-                cost = get_distance(self.pos, new_position)
 
-                self.model.connections[new_position] = ({(self.pos, cost)})
-                self.model.connections[self.pos].add((new_position, cost))
-
+        # Go through connecting steps if there are slime-occupied grid cells in the nighborhood
         if len(occupied_cells) > 0 and np.random.uniform() < self.model.p_connect:
-            connection = random.sample(occupied_cells, 1)[0]
-            cost = get_distance(self.pos, connection)
+            
+            # Pick random neighbouring slime agent (location) and update connections
+            coordinate = random.sample(occupied_cells, 1)[0]
+            self.connect(coordinate)
 
-            self.model.connections[self.pos].add((connection, cost))
-            self.model.connections[connection].add((self.pos, cost))
-
+        # Each slime agent goes through one cycle of multiplying/connecting
         self.model.schedule.remove(self)
