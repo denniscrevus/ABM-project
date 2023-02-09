@@ -1,5 +1,6 @@
 from agents import FoodAgent, SlimeAgent
 import math
+from helpers import text_to_coords
 from mesa import Model
 from mesa.time import BaseScheduler
 from mesa.space import MultiGrid
@@ -78,6 +79,10 @@ class SlimeModel(Model):
             food = FoodAgent(self.next_id(), self, coordinate)
             self.grid.place_agent(food, coordinate)
             self.food_locations[i] = coordinate
+
+    def get_connections(self):
+        """Returns the dictionary representing the entire network."""
+        return self.connections
 
     def run(self, N_steps):
         """
