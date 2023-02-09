@@ -24,8 +24,8 @@ def read_nodes(filename):
     return nodes
 
 
-def create_graph(filename):
-    G = nx.Graph()
+def read_edges(filename):
+    edges = []
 
     with open(filename, "r") as fp:
         reader = csv.reader(fp, delimiter=';')
@@ -36,14 +36,28 @@ def create_graph(filename):
             node_A = int(line[0])
             node_B = int(line[1])
 
-            G.add_edge(node_A, node_B)
+            edges.append((node_A, node_B))
+
+    return edges
+
+
+def create_graph(node_coords, edges):
+    G = nx.Graph()
+
+    for edge in edges:
+        node_A = edge[0]
+        node_B = edge[1]
+
+        G.add_edge(node_A, node_B, pos=(node_coords[node_A], node_coords[node_B]))
 
     return G
 
 
 if __name__ == "__main__":
-    node_coords = read_nodes("data/rome/network_nodes.csv")
-    graph = create_graph("data/rome/network_rail.csv")
+    city = "rome"
+    node_coords = read_nodes(f"data/{city}/network_nodes.csv")
+    edges = read_edges(f"data/{city}/network_rail.csv")
+    graph = create_graph(node_coords, edges)
 
     nodes_to_plot = {}
     N = 100
@@ -62,4 +76,7 @@ if __name__ == "__main__":
         plt.plot([x_a, x_b], [y_a, y_b], zorder=-1, color='r')
 
     plt.scatter([x for (x, y) in grid_indices.values()], [y for (x, y) in grid_indices.values()])
+
+    plt.title("Map of " + city)
+
     plt.show()
