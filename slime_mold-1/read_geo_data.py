@@ -1,7 +1,61 @@
 import csv
+import numpy as np
 import networkx as nx
+import matplotlib.pyplot as plt
+import utm
 
-from tokyo_mapping import *
+
+def coord_to_grid_coord(coord, hor_n, ver_n):
+    x, y = coord
+
+    x_index = np.ceil(hor_n * x)
+    y_index = np.ceil(ver_n * y)
+
+    if x_index >= hor_n:
+        x_index = hor_n - 1
+
+    if y_index >= ver_n:
+        y_index = ver_n - 1
+
+    return [int(x_index), int(y_index)]
+
+
+def coords_to_grid_indices(coords, hor_n, ver_n):
+    grid_indices = {}
+
+    for node_id in coords:
+        x, y = coords[node_id]
+
+        grid_indices[node_id] = coord_to_grid_coord((x, y), hor_n, ver_n)
+
+    return grid_indices
+
+
+def convert_geo_to_relative_coords(geo_coords):
+    station_locations = {}
+
+    # Convert coordinates to 2D space coordinates
+    for i in range(len(geo_coords)):
+        station_id = list(geo_coords.keys())[i]
+        latitude, longitude = geo_coords[station_id]
+        x, y, _, _ = utm.from_latlon(latitude, longitude)
+
+        station_locations[station_id] = (x, y)
+
+    # Scale and translate 2D coordinates
+    x_vals = [x for (x, _) in station_locations.values()]
+    y_vals = [y for (_, y) in station_locations.values()]
+
+    for i in range(len(geo_coords)):
+        node_id = list(station_locations.keys())[i]
+        x, y = station_locations[node_id]
+
+        x_new = (x - np.min(x_vals)) / (np.max(x_vals) - np.min(x_vals))
+        y_new = (y - np.min(y_vals)) / (np.max(y_vals) - np.min(y_vals))
+
+        station_locations[node_id] = (x_new, y_new)
+
+    return station_locations
 
 
 def read_nodes(filename):
@@ -80,3 +134,7 @@ if __name__ == "__main__":
     plt.title("Map of " + city)
 
     plt.show()
+
+
+    # Print some stats of the graph
+    print(nx.average_shortest_path_length(graph))
