@@ -3,6 +3,7 @@ from mesa import Model
 from mesa.time import BaseScheduler
 from mesa.space import MultiGrid
 import numpy as np
+from helpers import text_to_coords
 
 
 class Grid(MultiGrid):
