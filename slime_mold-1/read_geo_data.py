@@ -1,11 +1,8 @@
 import csv
 import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
 import utm
 import re
-
-from analyze_graph import get_average_shortest_path_length, get_average_node_degree, get_average_betweenness
 
 
 def coord_to_grid_coord(coord, hor_n, ver_n):
@@ -140,38 +137,3 @@ def get_city_grid(city, hor_N, ver_N):
     relative_coords = convert_geo_to_relative_coords(nodes_to_plot)
 
     return list(coords_to_grid_indices(relative_coords, hor_N, ver_N).values())
-
-
-if __name__ == "__main__":
-    city = "berlin"
-    node_coords = read_nodes(f"data/{city}/network_nodes.csv")
-    edges = read_edges(f"data/{city}/network_rail.csv")
-    graph = create_graph(node_coords, edges)
-
-    nodes_to_plot = {}
-    N = 100
-
-    for node in graph.nodes:
-        nodes_to_plot[node] = node_coords[node]
-
-    relative_coords = convert_geo_to_relative_coords(nodes_to_plot)
-    grid_indices = coords_to_grid_indices(convert_geo_to_relative_coords(nodes_to_plot), N, N)
-
-    for edge in graph.edges:
-        node_a, node_b = edge
-        (x_a, y_a) = grid_indices[node_a]
-        (x_b, y_b) = grid_indices[node_b]
-
-        plt.plot([x_a, x_b], [y_a, y_b], zorder=-1, color='r')
-
-    plt.scatter([x for (x, y) in grid_indices.values()], [y for (x, y) in grid_indices.values()])
-
-    plt.title("Map of " + city)
-
-    plt.show()
-
-    # Print some stats of the graph
-    print(graph)
-    print("average shortest path length", get_average_shortest_path_length(graph))
-    print("average degree", get_average_node_degree(graph))
-    print("average betweenness", get_average_betweenness(graph))
