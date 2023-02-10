@@ -1,5 +1,6 @@
 import sys
 import networkx as nx
+import matplotlib.pyplot as plt
 import pickle
 
 from agents import *
@@ -123,7 +124,7 @@ def plot_data(x_vals, data, n_runs):
     output_vars = ['average shortest path length', 'average degree', 'average betweenness']
 
     for i in range(len(output_vars)):
-        fig = plt.figure(dpi=300)
+        plt.figure(dpi=300)
 
         plt.plot(x_vals, mean_data[i])
         plt.fill_between(x_vals, mean_data[i] - std_data[i], mean_data[i] + std_data[i], alpha=0.5)
@@ -147,7 +148,7 @@ def plot_node_distribution():
     degrees = []
     for _ in range(50):
         model = SlimeModel(size, size, p_branch, p_connect, signal_strength, noise,
-                                food_coords)
+                            food_coords)
 
         connections = model.run(N_steps)
         reduced_graph = reduce_graph(connections, food_coords)
@@ -155,7 +156,7 @@ def plot_node_distribution():
 
         degrees += [d for (_, d) in nx_graph.degree(food_coords)]
 
-    fig = plt.figure()
+    plt.figure()
 
     plt.hist(degrees)
 
@@ -197,7 +198,7 @@ def run_experiment(N_runs=1, omit_unused=False, save_file=None):
             print(f"{100 * i / resolution:.2f}% {p_branch:.4f}")
 
             model = SlimeModel(size, size, p_branch, p_connect, signal_strength, noise,
-                            food_coords)
+                                food_coords)
 
             connections = model.run(N_steps)
             reduced_graph = reduce_graph(connections, food_coords)

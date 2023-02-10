@@ -71,14 +71,14 @@ def plot_result(graph, shortest_paths=None, show_all=True):
 
 
 if __name__ == "__main__":
-    N_steps = 200 #200
-    size = 100
-    p_branch = 0.075
-    p_connect = 0.1
-    signal_strength = 1
-    noise = 0.05 * signal_strength
-    tokyo_food_coords = text_to_coords("tokyo_coords.txt")
+    N_steps = 200                   # 200 default
+    size = 100                      # 100 default
+    p_branch = 0.075                # 0.075 default
+    p_connect = 0.1                 # 0.1 default
+    signal_strength = 1             # 1 default
+    noise = 0.05 * signal_strength  # 5% of signal_strength default
     food_coords = get_city_grid("rome", size, size)
+    # food_coords = text_to_coords("tokyo_coords.txt") # uncomment to use tokyo map
 
     model = SlimeModel(size, size, p_branch, p_connect, signal_strength, noise,
                         food_coords)

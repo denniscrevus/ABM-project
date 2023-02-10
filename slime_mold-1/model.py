@@ -1,10 +1,7 @@
 from agents import FoodAgent, SlimeAgent
-import math
-from helpers import text_to_coords
 from mesa import Model
 from mesa.time import BaseScheduler
 from mesa.space import MultiGrid
-from mesa.datacollection import DataCollector
 import numpy as np
 
 
@@ -53,6 +50,7 @@ class SlimeModel(Model):
         """
         # Initialise model parameters
         super().__init__()
+
         self.width = width
         self.height = height
         self.p_branch = p_branch

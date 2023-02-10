@@ -44,8 +44,8 @@ def coords_to_grid_indices(coords, hor_n, ver_n):
 
 
 def convert_geo_to_relative_coords(geo_coords):
-    """Takes a dictionary of node ids to geo-coordinates and maps them to numbers
-    between 0 and 1.
+    """Takes a dictionary of node ids to geo-coordinates and maps them to
+    numbers between 0 and 1.
     """
     station_locations = {}
 
@@ -81,7 +81,7 @@ def read_nodes(filename):
     with open(filename, "r") as fp:
         reader = csv.reader(fp, delimiter=';')
 
-        next(reader) # Skip first row
+        next(reader)  # Skip first row
 
         for line in reader:
             node_id = int(line[0])
@@ -99,7 +99,7 @@ def read_edges(filename):
     with open(filename, "r") as fp:
         reader = csv.reader(fp, delimiter=';')
 
-        next(reader) # Skip first row
+        next(reader)  # Skip first row
 
         for line in reader:
             node_A = int(line[0])

@@ -1,7 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Handpicked by Robbie :)
 STATION_GEO_COORDS = {
     "Maebashi": (36.383184, 139.073217),
     "Takasaki": (36.322827, 139.012662),
