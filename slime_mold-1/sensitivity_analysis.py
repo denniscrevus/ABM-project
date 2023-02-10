@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 import time
 
+
 def plot_param_var_conf(ax, df, var, param, i):
     """
     Helper function for plot_all_vars. Plots the individual parameter vs
@@ -35,6 +36,7 @@ def plot_param_var_conf(ax, df, var, param, i):
     ax.set_xlabel(var)
     ax.set_ylabel(param)
 
+
 def plot_all_vars(df, param, problem):
     """
     Plots the parameters passed vs each of the output variables.
@@ -56,6 +58,7 @@ def do_plots(params, data, problem):
     for param in params:
         plot_all_vars(data, param, problem)
         plt.show()
+
 
 def OFAT():
     # We define our variables and bounds
@@ -79,20 +82,21 @@ def OFAT():
     for i, var in enumerate(problem['names']):
         # Get the bounds for this variable and get <distinct_samples> samples within this space (uniform)
         samples = np.linspace(*problem['bounds'][i], num=distinct_samples)
-        
-        batch = BatchRunner(SlimeModel, 
+
+        batch = BatchRunner(SlimeModel,
                             max_steps=max_steps,
                             iterations=replicates,
                             variable_parameters={var: samples},
                             model_reporters=model_reporters,
                             display_progress=True)
-        
+
         batch.run_all()
-        
+
         data[var] = batch.get_model_vars_dataframe()
-    
+
     do_plots(["Graph size"], data, problem)
     plt.show()
+
 
 def plot_index(s, params, i, title=''):
     """
@@ -128,6 +132,7 @@ def plot_index(s, params, i, title=''):
     plt.axvline(0, c='k')
     plt.savefig(title)
 
+
 def sobol_first_total():
     # We define our variables and bounds
     problem = {
@@ -155,14 +160,14 @@ def sobol_first_total():
                         model_reporters=model_reporters)
 
     count = 0
-    data = pd.DataFrame(index=range(replicates*len(param_values)), 
+    data = pd.DataFrame(index=range(replicates*len(param_values)),
                                     columns=['p_branch', 'p_connect', 'signal_strength', 'noise'])
     data['Run'], data['Graph size'] = None, None
 
     start = time.time()
 
     for i in range(replicates):
-        for vals in param_values: 
+        for vals in param_values:
             # Transform to dict with parameter names and their values
             variable_parameters = {}
             for name, val in zip(problem['names'], vals):
@@ -189,6 +194,7 @@ def sobol_first_total():
     plot_index(Si_graph_size, problem['names'], 'T', 'Total order sensitivity')
     plot_index(Si_graph_size, problem['names'], '1', 'First order sensitivity')
     plt.show()
+
 
 if __name__ == "__main__":
     sobol_first_total()
