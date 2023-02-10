@@ -1,6 +1,8 @@
 # Agent Based Slime Model
 A model inspired by slime molds that creates a network and attempts to create a network with short paths between all possible nodes.
 
+![Network](graph.png)
+
 ## Usage
 There are a couple of files that can be run in this project.
 
