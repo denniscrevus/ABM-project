@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import combinations
+import time
 
 def plot_param_var_conf(ax, df, var, param, i):
     """
@@ -49,6 +50,8 @@ def plot_all_vars(df, param, problem):
     for i, var in enumerate(problem['names']):
         plot_param_var_conf(axs[i], df[var], var, param, i)
 
+    f.savefig(param)
+
 def do_plots(params, data, problem):
     for param in params:
         plot_all_vars(data, param, problem)
@@ -59,13 +62,13 @@ def OFAT():
     problem = {
         'num_vars': 4,
         'names': ['p_branch', 'p_connect', 'signal_strength', 'noise'],
-        'bounds': [[0.1, 0.5], [0.1, 0.5], [7, 15], [0.75, 1.5]]
+        'bounds': [[0.01, 0.1], [0.01, 0.1], [10, 11], [0.75, 1]]
     }
 
     # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-    replicates = 5
+    replicates = 2
     max_steps = 200
-    distinct_samples = 5
+    distinct_samples = 2
 
     # Set the outputs
     food_coords = text_to_coords("tokyo_coords.txt")
@@ -90,7 +93,6 @@ def OFAT():
     
     do_plots(["Graph size"], data, problem)
     plt.show()
-    plt.savefig("OFAT.png")
 
 def plot_index(s, params, i, title=''):
     """
@@ -124,19 +126,20 @@ def plot_index(s, params, i, title=''):
     plt.yticks(range(l), params)
     plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o')
     plt.axvline(0, c='k')
+    plt.savefig(title)
 
 def sobol_first_total():
     # We define our variables and bounds
     problem = {
         'num_vars': 4,
         'names': ['p_branch', 'p_connect', 'signal_strength', 'noise'],
-        'bounds': [[0.1, 0.5], [0.1, 0.5], [7, 15], [0.75, 1.5]]
+        'bounds': [[0.01, 0.1], [0.1, 0.2], [10, 11], [0.75, 0.90]]
     }
 
     # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-    replicates = 5
+    replicates = 8
     max_steps = 200
-    distinct_samples = 5
+    distinct_samples = 8
 
     # We get all our samples here
     param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
@@ -156,6 +159,8 @@ def sobol_first_total():
                                     columns=['p_branch', 'p_connect', 'signal_strength', 'noise'])
     data['Run'], data['Graph size'] = None, None
 
+    start = time.time()
+
     for i in range(replicates):
         for vals in param_values: 
             # Transform to dict with parameter names and their values
@@ -173,13 +178,17 @@ def sobol_first_total():
             clear_output()
             print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done')
 
-    # Total order and first order
+    end = time.time()
+    print("iterations / second")
+    print(len(data) / (end - start))
+    print(end - start)
+    print(len(data))
+    
+    # Total order and first order   
     Si_graph_size = sobol.analyze(problem, data['Graph size'].values, print_to_console=True, calc_second_order=False)
     plot_index(Si_graph_size, problem['names'], 'T', 'Total order sensitivity')
     plot_index(Si_graph_size, problem['names'], '1', 'First order sensitivity')
     plt.show()
-    plt.savefig("Sobol.png")
 
 if __name__ == "__main__":
-    OFAT()
     sobol_first_total()

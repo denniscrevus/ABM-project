@@ -38,7 +38,8 @@ class Grid(MultiGrid):
 class SlimeModel(Model):
     """Model for simulating slime network formation."""
 
-    def __init__(self, width, height, p_branch, p_connect, signal_strength, noise, food_coords):
+    def __init__(self, width=100, height=100, p_branch=0.075, p_connect=0.1, signal_strength=1,
+                    noise=0.05, food_coords=text_to_coords("tokyo_coords.txt")):
         """
         Initiate the model.
 
