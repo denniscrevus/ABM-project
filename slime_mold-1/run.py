@@ -4,6 +4,7 @@ from helpers import reduce_graph, text_to_coords
 from model import *
 from tokyo_mapping import *
 from analyze_graph import *
+from read_geo_data import get_city_grid
 
 
 def plot_result(graph, shortest_paths=None, show_all=True):
@@ -76,7 +77,8 @@ if __name__ == "__main__":
     p_connect = 0.1
     signal_strength = 1
     noise = 0.05 * signal_strength
-    food_coords = text_to_coords("tokyo_coords.txt")
+    tokyo_food_coords = text_to_coords("tokyo_coords.txt")
+    food_coords = get_city_grid("rome", size, size)
 
     model = SlimeModel(size, size, p_branch, p_connect, signal_strength, noise,
                         food_coords)

@@ -9,11 +9,11 @@ import numpy as np
 
 
 class Grid(MultiGrid):
-    """Extension of mesa.MultiGrid class to include a custom method.""" 
+    """Extension of mesa.MultiGrid class to include a custom method."""
     def __init__(self, width, height, torus=False):
         """
         Initiate a custom MultiGrid.
-        
+
         Args:
             width: width of the grid (int).
             height: height of the grid (int).
@@ -24,10 +24,10 @@ class Grid(MultiGrid):
     def get_cell_content(self, coordinate):
         """
         Function that returns all agents on a given grid cell.
-        
+
         Args:
             coordinate: tuple of (x, y) coordinates (int, int)
-        
+
         Returns:
             list of Agent objects.
         """
@@ -87,10 +87,10 @@ class SlimeModel(Model):
     def run(self, N_steps):
         """
         Main function that runs the model for N steps.
-        
+
         Args:
             N_steps: Amount of steps to run the model (int).
-        
+
         Returns:
             self.connections: dictionary containing locations (x, y) coordinates corresponding to Slime Agent positions as keys
                               and sets of ((x, y), cost) tuples as values representing connected Slime Agents.
@@ -127,7 +127,3 @@ class SlimeModel(Model):
     def step(self):
         """Advances the model by one step."""
         self.schedule.step()
-
-
-
-
