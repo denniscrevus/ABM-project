@@ -5,12 +5,16 @@ import pickle
 from agents import *
 from model import *
 from helpers import *
+from read_geo_data import get_city_grid
 
 
 class ExperimentResults:
-    def __init__(self, _x_vals, _results):
+    def __init__(self, _x_vals, _results, _n_runs):
         self.x_vals = _x_vals
         self.results = _results
+
+        # Meta data
+        self.n_runs = _n_runs
 
 
 def convert_result_to_graph(connections):
@@ -109,10 +113,10 @@ def load_data(filename):
     with open(filename, "rb") as fp:
         data_obj = pickle.load(fp)
 
-        return data_obj.x_vals, data_obj.results
+        return data_obj.x_vals, data_obj.results, data_obj.n_runs
 
 
-def plot_data(x_vals, data):
+def plot_data(x_vals, data, n_runs):
     mean_data = np.mean(data, axis=0)
     std_data = np.std(data, axis=0)
 
@@ -124,7 +128,7 @@ def plot_data(x_vals, data):
         plt.plot(x_vals, mean_data[i])
         plt.fill_between(x_vals, mean_data[i] - std_data[i], mean_data[i] + std_data[i], alpha=0.5)
 
-        plt.title("Slime ABM simulation (single run)")
+        plt.title(fr"Slime ABM simulation with Tokyo map ($N_{{runs}}={n_runs}$)")
         plt.xlabel("branch probability")
         plt.ylabel(output_vars[i])
 
@@ -167,28 +171,30 @@ def run_experiment(N_runs=1, omit_unused=False, save_file=None):
     """
     N_steps = 200
     size = 100
-    p_branch_vals = np.linspace(0.0, 1.0, 5)
+    resolution = 20
+    p_branch_vals = np.linspace(0.0, 1.0, resolution)
+    p_branch = 0.075
     p_connect = 0.1
     signal_strength = 1
     noise = 0.05 * signal_strength
-    food_coords = text_to_coords("tokyo_coords.txt")
+    food_coords = get_city_grid("rome", size, size)
 
-    all_data = np.zeros((N_runs, 3, len(p_branch_vals)))
+    all_data = np.zeros((N_runs, 3, resolution))
 
-    print(f"Estimated time: {N_runs * len(p_branch_vals) * 10} second(s)")
+    print(f"Estimated time: ~{N_runs * resolution * 10} second(s)")
 
     for run_i in range(N_runs):
-        average_length = np.zeros(len(p_branch_vals))
+        average_length = np.zeros(resolution)
         average_degree = np.zeros_like(average_length)
         average_betweenness = np.zeros_like(average_length)
 
         print("Run", run_i + 1)
 
-        for i in range(len(p_branch_vals)):
+        for i in range(resolution):
             p_branch = p_branch_vals[i]
 
             # Display progress
-            print(f"{100 * i / len(p_branch_vals):.2f}% {p_branch:.4f}")
+            print(f"{100 * i / resolution:.2f}% {p_branch:.4f}")
 
             model = SlimeModel(size, size, p_branch, p_connect, signal_strength, noise,
                             food_coords)
@@ -228,7 +234,7 @@ def run_experiment(N_runs=1, omit_unused=False, save_file=None):
 
     # Save the data in a different object to be pickled
     if save_file:
-        data_obj = ExperimentResults(p_branch_vals, all_data)
+        data_obj = ExperimentResults(p_branch_vals, all_data, N_runs)
 
         with open(save_file, "wb") as fp:
             pickle.dump(data_obj, fp)
@@ -243,7 +249,7 @@ if __name__ == "__main__":
     python analyze_data.py node_hist
         This creates a histogram with node degrees in the graph.
     """
-    N_runs = 1
+    N_runs = 5
 
     if len(sys.argv) > 1:
         command = sys.argv[1]
@@ -255,8 +261,8 @@ if __name__ == "__main__":
             if len(sys.argv) > 2:
                 filename = sys.argv[2]
 
-                x_vals, results = load_data(filename)
-                plot_data(x_vals, results)
+                x_vals, results, N_runs = load_data(filename)
+                plot_data(x_vals, results, N_runs)
             else:
                 print("please provide file to load and plot")
         # Run the data with the current parameters and save it in the specified file
@@ -272,3 +278,5 @@ if __name__ == "__main__":
                 plot_data(x_vals, results)
         elif command == 'node_hist':
             plot_node_distribution()
+    else:
+        print("Please provide a command (run, plot or node_hist)")
